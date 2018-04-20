@@ -105,6 +105,16 @@ class Scrapyard
     init
     log.info "Searching for #{keys}"
     paths = Key.to_path(@yard, keys, log)
+    cache = paths.select(&:exist?).max_by(&:mtime)
+    if cache
+      cmd = "tar zxf #{cache}"
+      log.debug "Found scrap in #{cache}, unpacking with #{cmd}"
+      system(cmd)
+      exit 0
+    else
+      log.debug "Unable to find scrap from any of %p" % [paths.map(&:to_s)]
+      exit 1
+    end
   end
 
   def dump(keys)
