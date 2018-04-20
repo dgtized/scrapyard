@@ -139,7 +139,7 @@ class Scrapyard
     Tempfile.open('scrapyard') do |temp|
       temp_path = temp.path
       cmd = "tar czf %s %s" % [temp_path, paths.join(" ")]
-      log.debug "Executing %p" % [cmd]
+      log.debug "Executing [#{cmd}]"
       system(cmd)
 
       key_paths.each do |key|
