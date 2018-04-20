@@ -24,13 +24,16 @@ echo "** Dump/Search"
 
 echo "** Multi Key Dump/Junk/Search"
 
-./scrapyard.rb $VERBOSE dump -k "key-#(a_file)","key-" -y scrapyard -p a_dir &&
+./scrapyard.rb $VERBOSE dump -k "key-#(a_file)","key" -y scrapyard -p a_dir &&
+    echo "SUCCESS"
+
+./scrapyard.rb $VERBOSE dump -k "key" -y scrapyard -p a_dir &&
     echo "SUCCESS"
 
 ./scrapyard.rb $VERBOSE junk -k "key-#(a_file)" -y scrapyard -p a_dir &&
     echo "SUCCESS"
 
-./scrapyard.rb $VERBOSE search -k "key-#(a_file)","key-" -y scrapyard -p a_dir &&
+./scrapyard.rb $VERBOSE search -k "key-#(a_file)","key" -y scrapyard -p a_dir &&
     echo "SUCCESS"
 
 ./scrapyard.rb $VERBOSE crush -y scrapyard &&

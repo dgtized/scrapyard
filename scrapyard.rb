@@ -117,8 +117,10 @@ class Scrapyard
     key_paths = Key.to_path(@yard, keys, "*", log)
 
     considering = key_paths.flat_map do |path|
-      Pathname.glob(path.to_s).max_by(&:mtime)
-    end
+      glob = Pathname.glob(path.to_s)
+      log.debug "Scanning %s -> %p" % [path,glob]
+      glob.max_by(&:mtime)
+    end.compact
 
     log.debug "Considering: %p" % [considering.map(&:to_s)]
     cache = considering.first
