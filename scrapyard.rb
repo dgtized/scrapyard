@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 
 require 'optparse'
+require 'logger'
 
 def parse_options(args = ARGV)
   options = {
@@ -63,4 +64,48 @@ def parse_options(args = ARGV)
   options
 end
 
-parse_options
+class Scrapyard
+  def initialize(yard, verbose)
+    @yard = yard
+    @log = Logger.new(STDOUT)
+    @log.level = if verbose
+      Logger::DEBUG
+    else
+      Logger::WARN
+    end
+  end
+
+  attr_reader :log
+
+  def search(keys)
+    init
+    log.info "Searching for #{keys}"
+  end
+
+  def dump(keys)
+    init
+    log.info "Dumping #{keys}"
+  end
+
+  def junk(keys)
+    init
+    log.info "Junking #{keys}"
+  end
+
+  def crush(_keys)
+    init
+    log.info "Crushing the yard to scrap!"
+  end
+
+  private
+
+  def init
+    @log.info "Scrapyard: #{@yard}"
+  end
+end
+
+options = parse_options
+
+Scrapyard.new(options[:yard], options[:verbose]).send(
+  options[:command], options[:keys]
+)
