@@ -141,21 +141,18 @@ class Scrapyard
   def dump(keys, paths)
     init
     log.info "Dumping #{keys}"
-    key_paths = Key.to_path(@yard, keys, ".tgz", log).map(&:to_s)
+    key_path = Key.to_path(@yard, keys, ".tgz", log).first.to_s
 
     Tempfile.open('scrapyard') do |temp|
       temp_path = temp.path
       cmd = "tar czf %s %s" % [temp_path, paths.join(" ")]
       log.debug "Executing [#{cmd}]"
       system(cmd)
-
-      key_paths.each do |key|
-        FileUtils.cp(temp_path, key)
-        system("touch #{key}")
-      end
+      FileUtils.mv temp_path, key_path
+      system("touch #{key_path}")
     end
 
-    log.info "Created: %s" % %x|ls -lah #{key_paths.join(" ")}|.chomp
+    log.info "Created: %s" % %x|ls -lah #{key_path}|.chomp
     exit 0
   end
 
