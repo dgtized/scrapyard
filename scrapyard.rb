@@ -116,11 +116,13 @@ class Scrapyard
     log.info "Searching for #{keys}"
     key_paths = Key.to_path(@yard, keys, "*", log)
 
-    cache = key_paths.flat_map do |path|
+    cache = nil
+    key_paths.each do |path|
       glob = Pathname.glob(path.to_s)
       log.debug "Scanning %s -> %p" % [path,glob.map(&:to_s)]
-      glob.max_by(&:mtime)
-    end.compact.first
+      cache = glob.max_by(&:mtime)
+      break if cache # return on first match
+    end
 
     if cache
       cmd = "tar zxf #{cache}"
