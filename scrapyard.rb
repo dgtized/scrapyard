@@ -105,7 +105,7 @@ end
 
 class Scrapyard
   def initialize(yard, log)
-    @yard = Pathname.new(yard).expand_path
+    @yard = Pathname.new(yard)
     @log = log
   end
 
