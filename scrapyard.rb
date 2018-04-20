@@ -8,7 +8,8 @@ require 'digest'
 def parse_options(args = ARGV)
   options = {
     keys: [],
-    yard: '/tmp/scrapyard'
+    yard: '/tmp/scrapyard',
+    paths: []
   }
 
   parser = OptionParser.new(args) do |opts|
@@ -20,6 +21,10 @@ def parse_options(args = ARGV)
     opts.on('-y', '--yard PATH', String,
             'The directory the scrapyard is stored in.') do |path|
       options[:yard] = path
+    end
+    opts.on("-p", '--paths PATH1,PATH2', Array,
+            "Paths to store in the scrapyard") do |paths|
+      options[:paths] = paths
     end
     opts.on_tail('-v', '--verbose') do
       options[:verbose] = true
@@ -44,9 +49,10 @@ def parse_options(args = ARGV)
   end
 
   command = args.shift.intern
+  options[:paths] += args # grab everything remaining after -- as a path
 
   if remaining = operations[command]
-    if args.size >= remaining
+    if options[:paths].size >= remaining
       options[:command] = command
     else
       puts "#{command} requires paths"
@@ -101,7 +107,7 @@ class Scrapyard
 
   attr_reader :log
 
-  def search(keys)
+  def search(keys, paths)
     init
     log.info "Searching for #{keys}"
     paths = Key.to_path(@yard, keys, log)
@@ -117,19 +123,19 @@ class Scrapyard
     end
   end
 
-  def dump(keys)
+  def dump(keys, paths)
     init
     log.info "Dumping #{keys}"
     key_paths = Key.to_path(@yard, keys, log)
   end
 
-  def junk(keys)
+  def junk(keys, _paths)
     init
     log.info "Junking #{keys}"
     key_paths = Key.to_path(@yard, keys, log)
   end
 
-  def crush(_keys)
+  def crush(_keys, _paths)
     init
     log.info "Crushing the yard to scrap!"
   end
@@ -155,4 +161,6 @@ else
   Logger::WARN
 end
 
-Scrapyard.new(options[:yard], log).send(options[:command], options[:keys])
+Scrapyard.new(options[:yard], log).send(
+  options[:command], options[:keys], options[:paths]
+)
