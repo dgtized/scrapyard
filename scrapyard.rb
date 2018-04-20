@@ -2,6 +2,7 @@
 
 require 'optparse'
 require 'logger'
+require 'pathname'
 
 def parse_options(args = ARGV)
   options = {
@@ -66,7 +67,7 @@ end
 
 class Scrapyard
   def initialize(yard, verbose)
-    @yard = yard
+    @yard = Pathname.new(yard).expand_path
     @log = Logger.new(STDOUT)
     @log.level = if verbose
       Logger::DEBUG
@@ -100,7 +101,12 @@ class Scrapyard
   private
 
   def init
-    @log.info "Scrapyard: #{@yard}"
+    if @yard.exist?
+      @log.info "Scrapyard: #{@yard}"
+    else
+      @log.info "Scrapyard: #{@yard} (creating)"
+      @yard.mkpath
+    end
   end
 end
 
