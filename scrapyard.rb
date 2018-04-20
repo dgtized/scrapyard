@@ -18,6 +18,9 @@ def parse_options(args = ARGV)
             'The directory the scrapyard is stored in.') do |path|
       options[:yard] = path
     end
+    opts.on_tail('-v', '--verbose') do
+      options[:verbose] = true
+    end
     opts.on_tail('-h', '--help') do
       puts opts
       exit
