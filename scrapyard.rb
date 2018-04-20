@@ -3,6 +3,7 @@
 require 'optparse'
 require 'logger'
 require 'pathname'
+require 'digest'
 
 def parse_options(args = ARGV)
   options = {
@@ -65,6 +66,33 @@ def parse_options(args = ARGV)
   options
 end
 
+class Key
+  def initialize(key)
+    @key = key
+  end
+
+  def checksum!(log)
+    @key = @key.gsub(/(#\{[^}]+\})/) do |match|
+      f = Pathname.new match[2..-2].strip
+      log.debug "Calculating checksum for #{f}"
+      if f.exist?
+        Digest::SHA1.file(f).hexdigest
+      else
+        log.debug "File #{f} does not exist, ignoring checksum"
+        ''
+      end
+    end
+  end
+
+  def to_s
+    @key
+  end
+
+  def self.for_path(yard, keys, log)
+    keys.map { |k| yard + (Key.new(k).checksum!(log).to_s + ".tgz") }
+  end
+end
+
 class Scrapyard
   def initialize(yard, log)
     @yard = Pathname.new(yard).expand_path
@@ -76,16 +104,19 @@ class Scrapyard
   def search(keys)
     init
     log.info "Searching for #{keys}"
+    keys = Key.for_path(@yard, keys, log)
   end
 
   def dump(keys)
     init
     log.info "Dumping #{keys}"
+    keys = Key.for_path(@yard, keys, log)
   end
 
   def junk(keys)
     init
     log.info "Junking #{keys}"
+    keys = Key.for_path(@yard, keys, log)
   end
 
   def crush(_keys)
