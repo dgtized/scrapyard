@@ -90,6 +90,8 @@ class Key
         ''
       end
     end
+
+    self
   end
 
   def to_s
