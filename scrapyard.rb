@@ -80,7 +80,7 @@ class Key
   end
 
   def checksum!(log)
-    @key = @key.gsub(/(#\{[^}]+\})/) do |match|
+    @key = @key.gsub(/(#\([^}]+\))/) do |match|
       f = Pathname.new match[2..-2].strip
       if f.exist?
         log.debug "Including sha1 of #{f}"

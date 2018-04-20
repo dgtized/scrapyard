@@ -9,7 +9,7 @@ A simple disk cache for faster CI builds
 Search the `yard` for a `key` to restore `paths`
 
 ```
-scrapyard search --key "junk-$GIT_BRANCH-#{bar}" \
+scrapyard search --key "junk-$GIT_BRANCH-#(bar)" \
     --yard /tmp/cache \
     -- parts.1 parts.2 parts.3
 ```
@@ -17,7 +17,7 @@ scrapyard search --key "junk-$GIT_BRANCH-#{bar}" \
 Save `paths` to the `yard` using the `key`
 
 ```
-scrapyard dump --key "junk-$GIT_BRANCH-#{bar}" \
+scrapyard dump --key "junk-$GIT_BRANCH-#(bar)" \
     --yard /tmp/cache \
     -- parts.1 parts.2 parts.3
 ```
@@ -25,7 +25,7 @@ scrapyard dump --key "junk-$GIT_BRANCH-#{bar}" \
 Remove a specific `key` from the `yard`:
 
 ```
-scrapyard junk --key "junk-$GIT_BRANCH-#{bar}" \
+scrapyard junk --key "junk-$GIT_BRANCH-#(bar)" \
     --yard /tmp/cache
 ```
 
