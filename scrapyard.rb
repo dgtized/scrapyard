@@ -114,13 +114,17 @@ class Scrapyard
   def search(keys, paths)
     init
     log.info "Searching for #{keys}"
-    paths = Key.to_path(@yard, keys, log)
-    cache = paths.select(&:exist?).max_by(&:mtime)
+    key_paths = Key.to_path(@yard, keys, log)
+    cache = key_paths.select(&:exist?).max_by(&:mtime)
     if cache
       cmd = "tar zxf #{cache}"
-      log.debug "Found scrap in #{cache}, unpacking with #{cmd}"
-      system(cmd)
-      exit 0
+      log.debug "Found scrap in #{cache}"
+      log.info "Executing [#{cmd}]"
+      rval = system(cmd)
+      unless paths.empty?
+        log.info "Restored: %s" % %x|du -sh #{paths.join(" ")}|.chomp
+      end
+      exit(rval == true ? 0 : 255)
     else
       log.debug "Unable to find scrap from any of %p" % [paths.map(&:to_s)]
       exit 1
@@ -144,7 +148,8 @@ class Scrapyard
       end
     end
 
-    system("ls -lah #{key_paths.join(" ")}")
+    log.info "Created: %s" % %x|ls -lah #{key_paths.join(" ")}|.chomp
+    exit 0
   end
 
   def junk(keys, _paths)
