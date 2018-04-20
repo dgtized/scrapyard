@@ -152,15 +152,17 @@ class Scrapyard
   end
 end
 
-options = parse_options
+if $PROGRAM_NAME == __FILE__
+  options = parse_options
 
-log = Logger.new(STDOUT)
-log.level = if options[:verbose]
-  Logger::DEBUG
-else
-  Logger::WARN
+  log = Logger.new(STDOUT)
+  log.level = if options[:verbose]
+    Logger::DEBUG
+  else
+    Logger::WARN
+  end
+
+  Scrapyard.new(options[:yard], log).send(
+    options[:command], options[:keys], options[:paths]
+  )
 end
-
-Scrapyard.new(options[:yard], log).send(
-  options[:command], options[:keys], options[:paths]
-)
