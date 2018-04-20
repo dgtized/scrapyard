@@ -98,8 +98,8 @@ class Key
     @key
   end
 
-  def self.to_path(yard, keys, log)
-    keys.map { |k| yard + (Key.new(k).checksum!(log).to_s + ".tgz") }
+  def self.to_path(yard, keys, suffix, log)
+    keys.map { |k| yard + (Key.new(k).checksum!(log).to_s + suffix) }
   end
 end
 
@@ -114,8 +114,15 @@ class Scrapyard
   def search(keys, paths)
     init
     log.info "Searching for #{keys}"
-    key_paths = Key.to_path(@yard, keys, log)
-    cache = key_paths.select(&:exist?).max_by(&:mtime)
+    key_paths = Key.to_path(@yard, keys, "*", log)
+
+    considering = key_paths.flat_map do |path|
+      Pathname.glob(path.to_s).max_by(&:mtime)
+    end
+
+    log.debug "Considering: %p" % [considering.map(&:to_s)]
+    cache = considering.first
+
     if cache
       cmd = "tar zxf #{cache}"
       log.debug "Found scrap in #{cache}"
@@ -134,7 +141,7 @@ class Scrapyard
   def dump(keys, paths)
     init
     log.info "Dumping #{keys}"
-    key_paths = Key.to_path(@yard, keys, log).map(&:to_s)
+    key_paths = Key.to_path(@yard, keys, ".tgz", log).map(&:to_s)
 
     Tempfile.open('scrapyard') do |temp|
       temp_path = temp.path
@@ -155,7 +162,7 @@ class Scrapyard
   def junk(keys, _paths)
     init
     log.info "Junking #{keys}"
-    key_paths = Key.to_path(@yard, keys, log)
+    key_paths = Key.to_path(@yard, keys, ".tgz", log)
     log.debug "Paths: %p" % key_paths.map(&:to_s)
     key_paths.select(&:exist?).each(&:delete)
     exit 0
