@@ -16,3 +16,9 @@ echo "content" > a_dir/a_file
 ./scrapyard.rb -v search -k "key-#(a_file)" -y scrapyard -p a_dir &&
     echo "SUCCESS"
 
+./scrapyard.rb -v junk -k "key-#(a_file)" -y scrapyard -p a_dir &&
+    echo "SUCCESS"
+
+./scrapyard.rb -v search -k "key-#(a_file)" -y scrapyard -p a_dir ||
+    echo "SUCCESS"
+

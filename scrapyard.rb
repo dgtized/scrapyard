@@ -156,6 +156,9 @@ class Scrapyard
     init
     log.info "Junking #{keys}"
     key_paths = Key.to_path(@yard, keys, log)
+    log.debug "Paths: %p" % key_paths.map(&:to_s)
+    key_paths.select(&:exist?).each(&:delete)
+    exit 0
   end
 
   def crush(_keys, _paths)
