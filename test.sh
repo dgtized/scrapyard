@@ -31,3 +31,5 @@ echo "** Multi Key Dump/Junk/Search"
 ./scrapyard.rb -v search -k "key-#(a_file)","key-" -y scrapyard -p a_dir &&
     echo "SUCCESS"
 
+./scrapyard.rb -v crush -y scrapyard &&
+    echo "SUCCESS"

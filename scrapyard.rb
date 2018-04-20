@@ -164,9 +164,21 @@ class Scrapyard
   def crush(_keys, _paths)
     init
     log.info "Crushing the yard to scrap!"
+    @yard.children.each do |tarball|
+      if tarball.mtime < (Time.now - 20*days)
+        log.info "Crushing: #{tarball}"
+        tarball.delete
+      else
+        log.debug "Keeping: #{tarball} at #{tarball.mtime}"
+      end
+    end
   end
 
   private
+
+  def days
+    24*60*60
+  end
 
   def init
     if @yard.exist?
