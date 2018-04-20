@@ -88,7 +88,7 @@ class Key
     @key
   end
 
-  def self.for_path(yard, keys, log)
+  def self.to_path(yard, keys, log)
     keys.map { |k| yard + (Key.new(k).checksum!(log).to_s + ".tgz") }
   end
 end
@@ -104,19 +104,19 @@ class Scrapyard
   def search(keys)
     init
     log.info "Searching for #{keys}"
-    keys = Key.for_path(@yard, keys, log)
+    paths = Key.to_path(@yard, keys, log)
   end
 
   def dump(keys)
     init
     log.info "Dumping #{keys}"
-    keys = Key.for_path(@yard, keys, log)
+    paths = Key.to_path(@yard, keys, log)
   end
 
   def junk(keys)
     init
     log.info "Junking #{keys}"
-    keys = Key.for_path(@yard, keys, log)
+    paths = Key.to_path(@yard, keys, log)
   end
 
   def crush(_keys)
