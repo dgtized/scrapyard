@@ -4,6 +4,8 @@ require 'optparse'
 require 'logger'
 require 'pathname'
 require 'digest'
+require 'tempfile'
+require 'fileutils'
 
 def parse_options(args = ARGV)
   options = {
@@ -126,7 +128,21 @@ class Scrapyard
   def dump(keys, paths)
     init
     log.info "Dumping #{keys}"
-    key_paths = Key.to_path(@yard, keys, log)
+    key_paths = Key.to_path(@yard, keys, log).map(&:to_s)
+
+    Tempfile.open('scrapyard') do |temp|
+      temp_path = temp.path
+      cmd = "tar czf %s %s" % [temp_path, paths.join(" ")]
+      log.debug "Executing %p" % [cmd]
+      system(cmd)
+
+      key_paths.each do |key|
+        FileUtils.cp(temp_path, key)
+        system("touch #{key}")
+      end
+    end
+
+    system("ls -lah #{key_paths.join(" ")}")
   end
 
   def junk(keys, _paths)
