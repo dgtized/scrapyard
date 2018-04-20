@@ -66,14 +66,9 @@ def parse_options(args = ARGV)
 end
 
 class Scrapyard
-  def initialize(yard, verbose)
+  def initialize(yard, log)
     @yard = Pathname.new(yard).expand_path
-    @log = Logger.new(STDOUT)
-    @log.level = if verbose
-      Logger::DEBUG
-    else
-      Logger::WARN
-    end
+    @log = log
   end
 
   attr_reader :log
@@ -112,6 +107,11 @@ end
 
 options = parse_options
 
-Scrapyard.new(options[:yard], options[:verbose]).send(
-  options[:command], options[:keys]
-)
+log = Logger.new(STDOUT)
+log.level = if options[:verbose]
+  Logger::DEBUG
+else
+  Logger::WARN
+end
+
+Scrapyard.new(options[:yard], log).send(options[:command], options[:keys])
