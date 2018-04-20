@@ -74,8 +74,8 @@ class Key
   def checksum!(log)
     @key = @key.gsub(/(#\{[^}]+\})/) do |match|
       f = Pathname.new match[2..-2].strip
-      log.debug "Calculating checksum for #{f}"
       if f.exist?
+        log.debug "Including sha1 of #{f}"
         Digest::SHA1.file(f).hexdigest
       else
         log.debug "File #{f} does not exist, ignoring checksum"
@@ -120,13 +120,13 @@ class Scrapyard
   def dump(keys)
     init
     log.info "Dumping #{keys}"
-    paths = Key.to_path(@yard, keys, log)
+    key_paths = Key.to_path(@yard, keys, log)
   end
 
   def junk(keys)
     init
     log.info "Junking #{keys}"
-    paths = Key.to_path(@yard, keys, log)
+    key_paths = Key.to_path(@yard, keys, log)
   end
 
   def crush(_keys)
