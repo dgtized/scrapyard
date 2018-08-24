@@ -44,7 +44,7 @@ def parse_options(args = ARGV)
     crush: 0
   }
 
-  if args.size == 0
+  if args.empty?
     puts "No command specified from #{operations.keys}"
     puts opts
     exit
@@ -53,7 +53,7 @@ def parse_options(args = ARGV)
   command = args.shift.intern
   options[:paths] += args # grab everything remaining after -- as a path
 
-  if remaining = operations[command]
+  if (remaining = operations[command])
     if options[:paths].size >= remaining
       options[:command] = command
     else
