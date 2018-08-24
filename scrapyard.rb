@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 require 'optparse'
 require 'logger'
@@ -69,7 +70,7 @@ def parse_options(args = ARGV)
     exit
   end
 
-  if %i{search dump junk}.include?(command) && options[:keys].empty?
+  if %i[search dump junk].include?(command) && options[:keys].empty?
     puts "Command #{command} requires at least one key argument"
   end
 
@@ -184,7 +185,7 @@ class Scrapyard
   private
 
   def days
-    24*60*60
+    24 * 60 * 60
   end
 
   def init
