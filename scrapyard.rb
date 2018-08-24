@@ -106,10 +106,43 @@ class Key
   end
 end
 
+# Save or restores from a tarball
+class Pack
+  attr_reader :log
+  def initialize(log)
+    @log = log
+  end
+
+  def save(cache, paths)
+    Tempfile.open('scrapyard') do |temp|
+      temp_path = temp.path
+      cmd = "tar czf %s %s" % [temp_path, paths.join(" ")]
+      log.debug "Executing [#{cmd}]"
+      system(cmd)
+      FileUtils.mv temp_path, cache
+      system("touch #{cache}")
+    end
+
+    log.info "Created: %s" % %x|ls -lah #{cache}|.chomp
+  end
+
+  def restore(cache, paths)
+    cmd = "tar zxf #{cache}"
+    log.debug "Found scrap in #{cache}"
+    log.info "Executing [#{cmd}]"
+    rval = system(cmd)
+    unless paths.empty?
+      log.info "Restored: %s" % %x|du -sh #{paths.join(" ")}|.chomp
+    end
+    rval == true ? 0 : 255
+  end
+end
+
 class Scrapyard
   def initialize(yard, log)
     @yard = Pathname.new(yard)
     @log = log
+    @pack = Pack.new(@log)
   end
 
   attr_reader :log
@@ -128,14 +161,7 @@ class Scrapyard
     end
 
     if cache
-      cmd = "tar zxf #{cache}"
-      log.debug "Found scrap in #{cache}"
-      log.info "Executing [#{cmd}]"
-      rval = system(cmd)
-      unless paths.empty?
-        log.info "Restored: %s" % %x|du -sh #{paths.join(" ")}|.chomp
-      end
-      exit(rval == true ? 0 : 255)
+      exit(@pack.restore(cache, paths))
     else
       log.info 'Unable to find key(s): %p' % [paths.map(&:to_s)]
       exit 1
@@ -147,16 +173,7 @@ class Scrapyard
     log.info "Storing #{keys}"
     key_path = Key.to_path(@yard, keys, ".tgz", log).first.to_s
 
-    Tempfile.open('scrapyard') do |temp|
-      temp_path = temp.path
-      cmd = "tar czf %s %s" % [temp_path, paths.join(" ")]
-      log.debug "Executing [#{cmd}]"
-      system(cmd)
-      FileUtils.mv temp_path, key_path
-      system("touch #{key_path}")
-    end
-
-    log.info "Created: %s" % %x|ls -lah #{key_path}|.chomp
+    @pack.save(key_path, paths)
     exit 0
   end
 
