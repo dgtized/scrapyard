@@ -42,7 +42,7 @@ def parse_options(args = ARGV)
 
   operations = {
     search: 1,
-    dump: 1,
+    store: 1,
     junk: 0,
     crush: 0
   }
@@ -70,7 +70,7 @@ def parse_options(args = ARGV)
     exit
   end
 
-  if %i[search dump junk].include?(command) && options[:keys].empty?
+  if %i[search store junk].include?(command) && options[:keys].empty?
     puts "Command #{command} requires at least one key argument"
   end
 
@@ -142,9 +142,9 @@ class Scrapyard
     end
   end
 
-  def dump(keys, paths)
+  def store(keys, paths)
     init
-    log.info "Dumping #{keys}"
+    log.info "Storing #{keys}"
     key_path = Key.to_path(@yard, keys, ".tgz", log).first.to_s
 
     Tempfile.open('scrapyard') do |temp|
