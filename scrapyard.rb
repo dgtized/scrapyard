@@ -137,7 +137,7 @@ class Scrapyard
       end
       exit(rval == true ? 0 : 255)
     else
-      log.debug "Unable to find scrap from any of %p" % [paths.map(&:to_s)]
+      log.info 'Unable to find key(s): %p' % [paths.map(&:to_s)]
       exit 1
     end
   end
