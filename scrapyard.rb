@@ -15,17 +15,19 @@ def parse_options(args = ARGV)
   }
 
   parser = OptionParser.new(args) do |opts|
-    opts.banner = "Usage: scrapyard.rb [command] [options]"
-    opts.on('-k', '--keys KEY1,KEY2', Array,
-            'Specify keys for search or dumping in order of preference') do |keys|
+    opts.banner = 'Usage: scrapyard.rb [command] [options]'
+    opts.on(
+      '-k', '--keys KEY1,KEY2', Array,
+      'Specify keys for search or dumping in order of preference'
+    ) do |keys|
       options[:keys] = keys
     end
     opts.on('-y', '--yard PATH', String,
             'The directory the scrapyard is stored in.') do |path|
       options[:yard] = path
     end
-    opts.on("-p", '--paths PATH1,PATH2', Array,
-            "Paths to store in the scrapyard") do |paths|
+    opts.on('-p', '--paths PATH1,PATH2', Array,
+            'Paths to store in the scrapyard') do |paths|
       options[:paths] = paths
     end
     opts.on_tail('-v', '--verbose') do
