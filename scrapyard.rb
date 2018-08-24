@@ -199,11 +199,7 @@ if $PROGRAM_NAME == __FILE__
   options = parse_options
 
   log = Logger.new(STDOUT)
-  log.level = if options[:verbose]
-    Logger::DEBUG
-  else
-    Logger::WARN
-  end
+  log.level = options[:verbose] ? Logger::DEBUG : Logger::WARN
 
   Scrapyard.new(options[:yard], log).send(
     options[:command], options[:keys], options[:paths]
