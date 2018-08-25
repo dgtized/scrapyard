@@ -245,9 +245,10 @@ class AwsS3Yard < Yard
     '/tmp/'
   end
 
+  S3_CMD="aws s3"
   AWS_LS = /(?<time>\d+-\d+-\d+ \d+:\d+:\d+)\s+(?<size>\d+)\s+(?<name>.*)$/
   def search(key_paths)
-    files = `aws s3 ls #{@bucket}`.chomp.split(/$/).map do |file|
+    files = `#{S3_CMD} ls #{@bucket}`.chomp.split(/$/).map do |file|
       if (m = file.match(AWS_LS))
         { file: m['name'], size: m['size'], time: m['time'] }
       else
@@ -269,19 +270,19 @@ class AwsS3Yard < Yard
   def fetch(cache)
     remote = @bucket + cache
     local = Pathname.new(to_path).join(cache)
-    system("aws s3 cp #{remote} #{local}")
+    system("#{S3_CMD} cp #{remote} #{local}")
     local
   end
 
   def store(cache)
     remote_path = @bucket + Pathname.new(cache).basename.to_s
-    system("aws s3 cp #{cache} #{remote_path}")
+    system("#{S3_CMD} cp #{cache} #{remote_path}")
   end
 
   def junk(key_paths)
     key_paths.each do |key|
       path = @bucket + Pathname.new(key).basename.to_s
-      system("aws s3 rm #{path}")
+      system("#{S3_CMD} rm #{path}")
     end
   end
 end
