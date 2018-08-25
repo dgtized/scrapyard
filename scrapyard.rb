@@ -168,6 +168,10 @@ class FileYard
     nil
   end
 
+  def store(cache)
+    cache # no-op for local
+  end
+
   def junk(key_paths)
     key_paths.select(&:exist?).each(&:delete)
   end
@@ -202,6 +206,10 @@ class AwsS3Yard
   end
 
   def search(key_paths)
+    @log.error "not implemented"
+  end
+
+  def store(cache)
     @log.error "not implemented"
   end
 
@@ -242,7 +250,7 @@ class Scrapyard
     log.info "Storing #{keys}"
     key_path = Key.to_path(@yard, keys, ".tgz", log).first.to_s
 
-    @pack.save(key_path, paths)
+    @yard.store(@pack.save(key_path, paths))
     exit 0
   end
 
