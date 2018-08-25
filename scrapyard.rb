@@ -124,6 +124,8 @@ class Pack
     end
 
     log.info "Created: %s" % %x|ls -lah #{cache}|.chomp
+
+    cache
   end
 
   def restore(cache, paths)
@@ -143,11 +145,6 @@ class Yard
   def self.for(yard, log)
     klass = yard =~ /^s3:/ ? AwsS3Yard : FileYard
     @yard = klass.new(yard, log)
-  end
-
-  def initialize(yard, log)
-    @bucket = yard
-    @log = log
   end
 
   def to_path
@@ -239,6 +236,19 @@ end
 
 # Implement Yard using an S3 bucket as storage
 class AwsS3Yard < Yard
+  def initialize(yard, log)
+    @bucket = yard
+    @log = log
+  end
+
+  def to_path
+    '/tmp/'
+  end
+
+  def store(cache)
+    remote_path = @bucket + Pathname.new(cache).basename.to_s
+    system("aws s3 cp #{cache} #{remote_path}")
+  end
 end
 
 class Scrapyard
