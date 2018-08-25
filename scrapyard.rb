@@ -138,6 +138,7 @@ class Pack
   end
 end
 
+# Yard Interface
 class Yard
   def self.for(yard, log)
     klass = yard =~ /^s3:/ ? AwsS3Yard : FileYard
@@ -174,6 +175,7 @@ class Yard
   end
 end
 
+# Implement Yard using a directory as storage
 class FileYard < Yard
   def initialize(yard, log)
     @path = Pathname.new(yard)
@@ -235,6 +237,7 @@ class FileYard < Yard
   end
 end
 
+# Implement Yard using an S3 bucket as storage
 class AwsS3Yard < Yard
 end
 
