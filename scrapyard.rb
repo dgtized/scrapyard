@@ -195,7 +195,12 @@ class FileYard
   end
 end
 
-class AwsS3Yard
+class Yard
+  def self.for(yard, log)
+    klass = yard =~ /^s3:/ ? AwsS3Yard : FileYard
+    @yard = klass.new(yard, log)
+  end
+
   def initialize(yard, log)
     @bucket = yard
     @log = log
@@ -222,10 +227,12 @@ class AwsS3Yard
   end
 end
 
+class AwsS3Yard < Yard
+end
+
 class Scrapyard
   def initialize(yard, log)
-    klass = yard =~ /^s3:/ ? AwsS3Yard : FileYard
-    @yard = klass.new(yard, log)
+    @yard = Yard.for(yard, log)
     @log = log
     @pack = Pack.new(@log)
   end
