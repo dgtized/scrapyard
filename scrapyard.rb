@@ -191,9 +191,33 @@ class FileYard
   end
 end
 
+class AwsS3Yard
+  def initialize(yard, log)
+    @bucket = yard
+    @log = log
+  end
+
+  def init
+    @log.error "not implemented"
+  end
+
+  def search(key_paths)
+    @log.error "not implemented"
+  end
+
+  def junk(key_paths)
+    @log.error "not implemented"
+  end
+
+  def crush
+    @log.error "not_implemented"
+  end
+end
+
 class Scrapyard
   def initialize(yard, log)
-    @yard = FileYard.new(yard, log)
+    klass = yard =~ /^s3:/ ? AwsS3Yard : FileYard
+    @yard = klass.new(yard, log)
     @log = log
     @pack = Pack.new(@log)
   end
