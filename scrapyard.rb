@@ -102,7 +102,7 @@ class Key
   end
 
   def self.to_path(yard, keys, suffix, log)
-    keys.map { |k| yard.to_key + (Key.new(k).checksum!(log).to_s + suffix) }
+    keys.map { |k| yard.to_path + (Key.new(k).checksum!(log).to_s + suffix) }
   end
 end
 
@@ -144,8 +144,8 @@ class FileYard
     @log = log
   end
 
-  def to_key
-    @path.to_s
+  def to_path
+    @path
   end
 
   def init
