@@ -277,6 +277,7 @@ class Scrapyard
 
   def crush(_keys, _paths)
     @yard.crush
+    exit 0
   end
 end
 
