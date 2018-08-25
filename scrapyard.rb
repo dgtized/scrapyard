@@ -184,16 +184,8 @@ class FileYard < Yard
     @path
   end
 
-  def init
-    if @path.exist?
-      @log.info "Scrapyard: #{@path}"
-    else
-      @log.info "Scrapyard: #{@path} (creating)"
-      @path.mkpath
-    end
-  end
-
   def search(key_paths)
+    init
     key_paths.each do |path|
       glob = Pathname.glob(path.to_s)
       @log.debug "Scanning %s -> %p" % [path,glob.map(&:to_s)]
@@ -205,14 +197,17 @@ class FileYard < Yard
   end
 
   def store(cache)
+    init
     cache # no-op for local
   end
 
   def junk(key_paths)
+    init
     key_paths.select(&:exist?).each(&:delete)
   end
 
   def crush
+    init
     @log.info 'Crushing the yard to scrap!'
     @path.children.each do |tarball|
       if tarball.mtime < (Time.now - 20 * days)
@@ -225,6 +220,15 @@ class FileYard < Yard
   end
 
   private
+
+  def init
+    if @path.exist?
+      @log.info "Scrapyard: #{@path}"
+    else
+      @log.info "Scrapyard: #{@path} (creating)"
+      @path.mkpath
+    end
+  end
 
   def days
     24 * 60 * 60
@@ -244,7 +248,6 @@ class Scrapyard
   attr_reader :log
 
   def search(keys, paths)
-    @yard.init
     log.info "Searching for #{keys}"
     key_paths = Key.to_path(@yard, keys, "*", log)
 
@@ -257,7 +260,6 @@ class Scrapyard
   end
 
   def store(keys, paths)
-    @yard.init
     log.info "Storing #{keys}"
     key_path = Key.to_path(@yard, keys, ".tgz", log).first.to_s
 
@@ -266,7 +268,6 @@ class Scrapyard
   end
 
   def junk(keys, _paths)
-    @yard.init
     log.info "Junking #{keys}"
     key_paths = Key.to_path(@yard, keys, ".tgz", log)
     log.debug "Paths: %p" % key_paths.map(&:to_s)
@@ -275,7 +276,6 @@ class Scrapyard
   end
 
   def crush(_keys, _paths)
-    @yard.init
     @yard.crush
   end
 end
