@@ -210,7 +210,7 @@ class Scrapyard
     @yard.init
     log.info "Crushing the yard to scrap!"
     @yard.children.each do |tarball|
-      if tarball.mtime < (Time.now - 20*days)
+      if tarball.mtime < (Time.now - 20 * days)
         log.info "Crushing: #{tarball}"
         tarball.delete
       else
