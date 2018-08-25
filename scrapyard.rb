@@ -245,6 +245,34 @@ class AwsS3Yard < Yard
     '/tmp/'
   end
 
+  AWS_LS = /(?<time>\d+-\d+-\d+ \d+:\d+:\d+)\s+(?<size>\d+)\s+(?<name>.*)$/
+  def search(key_paths)
+    files = `aws s3 ls #{@bucket}`.chomp.split(/$/).map do |file|
+      if (m = file.match(AWS_LS))
+        { file: m['name'], size: m['size'], time: m['time'] }
+      else
+        @log.warn "Unable to parse #{file}"
+      end
+    end
+
+    @log.debug 'Scanning ' + files.inspect
+
+    key_paths.each do |key|
+      prefix = Pathname.new(key).basename.to_s.tr('*', '')
+      needle = files.select { |f| f[:file].start_with? prefix }.max_by { |f| f[:time] }
+      return fetch(needle[:file]) if needle
+    end
+
+    nil
+  end
+
+  def fetch(cache)
+    remote = @bucket + cache
+    local = Pathname.new(to_path).join(cache)
+    system("aws s3 cp #{remote} #{local}")
+    local
+  end
+
   def store(cache)
     remote_path = @bucket + Pathname.new(cache).basename.to_s
     system("aws s3 cp #{cache} #{remote_path}")
