@@ -156,6 +156,17 @@ class FileYard
       @path.mkpath
     end
   end
+
+  def search(key_paths)
+    key_paths.each do |path|
+      glob = Pathname.glob(path.to_s)
+      @log.debug "Scanning %s -> %p" % [path,glob.map(&:to_s)]
+      cache = glob.max_by(&:mtime)
+      return cache if cache # return on first match
+    end
+
+    nil
+  end
 end
 
 class Scrapyard
@@ -172,15 +183,7 @@ class Scrapyard
     log.info "Searching for #{keys}"
     key_paths = Key.to_path(@yard, keys, "*", log)
 
-    cache = nil
-    key_paths.each do |path|
-      glob = Pathname.glob(path.to_s)
-      log.debug "Scanning %s -> %p" % [path,glob.map(&:to_s)]
-      cache = glob.max_by(&:mtime)
-      break if cache # return on first match
-    end
-
-    if cache
+    if (cache = @yard.search(key_paths))
       exit(@pack.restore(cache, paths))
     else
       log.info 'Unable to find key(s): %p' % [paths.map(&:to_s)]
