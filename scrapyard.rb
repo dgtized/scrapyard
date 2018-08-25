@@ -277,6 +277,13 @@ class AwsS3Yard < Yard
     remote_path = @bucket + Pathname.new(cache).basename.to_s
     system("aws s3 cp #{cache} #{remote_path}")
   end
+
+  def junk(key_paths)
+    key_paths.each do |key|
+      path = @bucket + Pathname.new(key).basename.to_s
+      system("aws s3 rm #{path}")
+    end
+  end
 end
 
 class Scrapyard
