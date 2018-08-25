@@ -138,7 +138,43 @@ class Pack
   end
 end
 
-class FileYard
+class Yard
+  def self.for(yard, log)
+    klass = yard =~ /^s3:/ ? AwsS3Yard : FileYard
+    @yard = klass.new(yard, log)
+  end
+
+  def initialize(yard, log)
+    @bucket = yard
+    @log = log
+  end
+
+  def to_path
+    @log.error "not implemented"
+  end
+
+  def init
+    @log.error "not implemented"
+  end
+
+  def search(key_paths)
+    @log.error "not implemented"
+  end
+
+  def store(cache)
+    @log.error "not implemented"
+  end
+
+  def junk(key_paths)
+    @log.error "not implemented"
+  end
+
+  def crush
+    @log.error "not_implemented"
+  end
+end
+
+class FileYard < Yard
   def initialize(yard, log)
     @path = Pathname.new(yard)
     @log = log
@@ -192,38 +228,6 @@ class FileYard
 
   def days
     24 * 60 * 60
-  end
-end
-
-class Yard
-  def self.for(yard, log)
-    klass = yard =~ /^s3:/ ? AwsS3Yard : FileYard
-    @yard = klass.new(yard, log)
-  end
-
-  def initialize(yard, log)
-    @bucket = yard
-    @log = log
-  end
-
-  def init
-    @log.error "not implemented"
-  end
-
-  def search(key_paths)
-    @log.error "not implemented"
-  end
-
-  def store(cache)
-    @log.error "not implemented"
-  end
-
-  def junk(key_paths)
-    @log.error "not implemented"
-  end
-
-  def crush
-    @log.error "not_implemented"
   end
 end
 
