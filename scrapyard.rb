@@ -167,6 +167,28 @@ class FileYard
 
     nil
   end
+
+  def junk(key_paths)
+    key_paths.select(&:exist?).each(&:delete)
+  end
+
+  def crush
+    @log.info 'Crushing the yard to scrap!'
+    @path.children.each do |tarball|
+      if tarball.mtime < (Time.now - 20 * days)
+        @log.info "Crushing: #{tarball}"
+        tarball.delete
+      else
+        @log.debug "Keeping: #{tarball} at #{tarball.mtime}"
+      end
+    end
+  end
+
+  private
+
+  def days
+    24 * 60 * 60
+  end
 end
 
 class Scrapyard
@@ -205,27 +227,13 @@ class Scrapyard
     log.info "Junking #{keys}"
     key_paths = Key.to_path(@yard, keys, ".tgz", log)
     log.debug "Paths: %p" % key_paths.map(&:to_s)
-    key_paths.select(&:exist?).each(&:delete)
+    @yard.junk(key_paths)
     exit 0
   end
 
   def crush(_keys, _paths)
     @yard.init
-    log.info "Crushing the yard to scrap!"
-    @yard.children.each do |tarball|
-      if tarball.mtime < (Time.now - 20 * days)
-        log.info "Crushing: #{tarball}"
-        tarball.delete
-      else
-        log.debug "Keeping: #{tarball} at #{tarball.mtime}"
-      end
-    end
-  end
-
-  private
-
-  def days
-    24 * 60 * 60
+    @yard.crush
   end
 end
 
