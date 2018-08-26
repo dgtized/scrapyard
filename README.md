@@ -17,7 +17,7 @@ scrapyard search --key "junk-$GIT_BRANCH-#(bar)","junk-$GIT_BRANCH", "junk-" \
 Save `paths` to the `yard` using the `key`
 
 ```
-scrapyard dump --key "junk-$GIT_BRANCH-#(bar)" \
+scrapyard store --key "junk-$GIT_BRANCH-#(bar)" \
     --yard /tmp/cache \
     -- parts.1 parts.2 parts.3
 ```
