@@ -2,6 +2,7 @@
 
 set -exuo pipefail
 
+SCRAPYARD=${1:-./scrapyard.rb}
 VERBOSE="-v"
 
 rm -rf a_dir a_file scrapyard
@@ -12,30 +13,30 @@ YARD=scrapyard
 
 echo "** Search"
 
-./scrapyard.rb $VERBOSE search -k "key-#(a_file)" -y $YARD -p a_dir ||
+$SCRAPYARD $VERBOSE search -k "key-#(a_file)" -y $YARD -p a_dir ||
     echo "SUCCESS"
 
 echo "** Store/Search"
 
-./scrapyard.rb $VERBOSE store -k "key-#(a_file)" -y $YARD -p a_dir &&
+$SCRAPYARD $VERBOSE store -k "key-#(a_file)" -y $YARD -p a_dir &&
     echo "SUCCESS"
 
-./scrapyard.rb $VERBOSE search -k "key-#(a_file)" -y $YARD -p a_dir &&
+$SCRAPYARD $VERBOSE search -k "key-#(a_file)" -y $YARD -p a_dir &&
     echo "SUCCESS"
 
 echo "** Multi Key Store/Junk/Search"
 
-./scrapyard.rb $VERBOSE store -k "key-#(a_file)","key" -y $YARD -p a_dir &&
+$SCRAPYARD $VERBOSE store -k "key-#(a_file)" -y $YARD -p a_dir &&
     echo "SUCCESS"
 
-./scrapyard.rb $VERBOSE store -k "key" -y $YARD -p a_dir &&
+$SCRAPYARD $VERBOSE store -k "key" -y $YARD -p a_dir &&
     echo "SUCCESS"
 
-./scrapyard.rb $VERBOSE junk -k "key-#(a_file)" -y $YARD -p a_dir &&
+$SCRAPYARD $VERBOSE junk -k "key-#(a_file)" -y $YARD &&
     echo "SUCCESS"
 
-./scrapyard.rb $VERBOSE search -k "key-#(a_file)","key","k" -y $YARD -p a_dir &&
+$SCRAPYARD $VERBOSE search -k "key-#(a_file)","key","k" -y $YARD -p a_dir &&
     echo "SUCCESS"
 
-./scrapyard.rb $VERBOSE crush -y $YARD &&
+$SCRAPYARD $VERBOSE crush -y $YARD &&
     echo "SUCCESS"
