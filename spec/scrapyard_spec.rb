@@ -38,12 +38,21 @@ RSpec.describe "Commands" do
     assert_cache(dir, contents)
   end
 
-  it 'seaches by mtime for multiple caches' do
+  it 'searches by mtime for multiple caches' do
     cacheA = make_cache("key-A", "a")
     cacheB = make_cache("key-B", "b")
 
     expect(system("./scrapyard.rb search -k key -y yard -p #{cacheB}")).to be_truthy
 
     assert_cache(cacheB, "b")
+  end
+
+  it 'searches by key preference' do
+    cacheA = make_cache("key-A", "a")
+    cacheB = make_cache("key-B", "b")
+
+    expect(system("./scrapyard.rb search -k key-A,key-B -y yard -p #{cacheA}")).to be_truthy
+
+    assert_cache(cacheA, "a")
   end
 end
