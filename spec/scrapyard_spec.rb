@@ -12,13 +12,17 @@ RSpec.describe "Commands" do
     system("rm -rf yard tmp")
   end
 
-  it 'creates a cache' do
-    contents = "alpaca"
-    dir = Dir.mktmpdir(nil, "tmp") do |dir|
+  def make_cache(contents)
+    Dir.mktmpdir(nil, "tmp") do |dir|
       IO.write("#{dir}/foo", contents)
       expect(system("./scrapyard.rb store -k key -y yard -p #{dir}")).to be_truthy
       dir
     end
+  end
+
+  it 'creates a cache' do
+    contents = "alpaca"
+    dir = make_cache(contents)
 
     expect(File.exist?(dir)).to be_falsey
 
