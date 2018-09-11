@@ -177,6 +177,7 @@ class FileYard < Yard
   def initialize(yard, log)
     @path = Pathname.new(yard)
     @log = log
+    init
   end
 
   def to_path
@@ -184,7 +185,6 @@ class FileYard < Yard
   end
 
   def search(key_paths)
-    init
     key_paths.each do |path|
       glob = Pathname.glob(path.to_s)
       @log.debug "Scanning %s -> %p" % [path,glob.map(&:to_s)]
@@ -196,17 +196,14 @@ class FileYard < Yard
   end
 
   def store(cache)
-    init
     cache # no-op for local
   end
 
   def junk(key_paths)
-    init
     key_paths.select(&:exist?).each(&:delete)
   end
 
   def crush
-    init
     @log.info 'Crushing the yard to scrap!'
     @path.children.each do |tarball|
       if tarball.mtime < (Time.now - 20 * days)
