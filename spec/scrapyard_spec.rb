@@ -47,7 +47,6 @@ RSpec.describe "Commands" do
     let!(:cacheB) { make_cache("key-B", "b") }
 
     it 'searches by mtime for multiple caches' do
-
       scrap("search -k key -y yard -p #{cacheB}")
 
       assert_cache(cacheB, "b")
@@ -58,6 +57,5 @@ RSpec.describe "Commands" do
 
       assert_cache(cacheA, "a")
     end
-
   end
 end
