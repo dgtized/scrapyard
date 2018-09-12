@@ -30,12 +30,12 @@ jobs:
       - run:
           name: Run rspec in parallel
           command: |
-            mkdir /tmp/test-results
+            mkdir -p /tmp/test-results/rspec
             TEST_FILES="$(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)"
 
             bundle exec rspec --profile 10 \
                               --format RspecJunitFormatter \
-                              --out /tmp/test_results/rspec.xml \
+                              --out /tmp/test-results/rspec/results.xml \
                               --format progress \
                               $TEST_FILES
 
