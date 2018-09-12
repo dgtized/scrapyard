@@ -28,6 +28,10 @@ jobs:
             - vendor/bundle
 
       - run:
+          name: Rubocop
+          command: bundle exec rubocop -c .rubocop.yml
+
+      - run:
           name: Run rspec in parallel
           command: |
             mkdir -p /tmp/test-results/rspec

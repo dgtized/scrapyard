@@ -1,0 +1,33 @@
+inherit_from: .rubocop_todo.yml
+
+AllCops:
+  TargetRubyVersion: 2.3
+
+# not sure if mandatory spacing is important
+Layout/SpaceInsideBlockBraces:
+  Enabled: false
+Layout/SpaceInsideHashLiteralBraces:
+  Enabled: false
+Layout/SpaceInsideParens:
+  Enabled: false
+
+# caring about '' or "" seems overly pedantic
+Style/StringLiterals:
+  Enabled: false
+
+# caring about formalizing names of single line block params is dumb
+Style/SingleLineBlockParams:
+  Enabled: false
+
+# mandated sprintf, format over String#%
+Style/FormatString:
+  Enabled: false
+
+# 120-column lines are fine.
+Metrics/LineLength:
+  Max: 120
+
+Metrics/BlockLength:
+  Exclude:
+    # it's fine for rspec tests to have huge blocks. That's the whole API!
+    - 'spec/**/*'
