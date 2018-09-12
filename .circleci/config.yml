@@ -1,0 +1,47 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/ruby:2.5-stretch-node-browsers-legacy
+    steps:
+      - checkout
+
+      - run:
+          name: Which bundler?
+          command: bundle -v
+
+      # Restore bundle cache
+      - restore_cache:
+          keys:
+            - bundle-v1-{{ checksum "Gemfile.lock" }}
+            - bundle-v1-
+
+      - run:
+          name: Bundle Install
+          command: |
+            bundle install --jobs=4 --retry=3 --path vendor/bundle
+
+      # Store bundle cache
+      - save_cache:
+          key: bundle-v1-{{ checksum "Gemfile.lock" }}
+          paths:
+            - vendor/bundle
+
+      - run:
+          name: Run rspec in parallel
+          command: |
+            mkdir /tmp/test-results
+            TEST_FILES="$(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)"
+
+            bundle exec rspec --profile 10 \
+                              --format RspecJunitFormatter \
+                              --out /tmp/test_results/rspec.xml \
+                              --format progress \
+                              $TEST_FILES
+
+      # Save test results for timing analysis
+      - store_test_results:
+          path: /tmp/test-results
+      - store_artifacts:
+          path: /tmp/test-results
+          destination: test-results
