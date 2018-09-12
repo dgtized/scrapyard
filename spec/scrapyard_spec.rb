@@ -12,10 +12,14 @@ RSpec.describe "Commands" do
     system("rm -rf yard tmp")
   end
 
+  def scrap(args)
+    expect(system("./scrapyard.rb #{args}")).to be_truthy
+  end
+
   def make_cache(name, contents)
     Dir.mktmpdir(nil, "tmp") do |dir|
       IO.write("#{dir}/foo", contents)
-      expect(system("./scrapyard.rb store -k #{name} -y yard -p #{dir}")).to be_truthy
+      scrap("store -k #{name} -y yard -p #{dir}")
       dir
     end
   end
@@ -33,7 +37,7 @@ RSpec.describe "Commands" do
 
     expect(File.exist?("yard/key.tgz")).to be_truthy
 
-    expect(system("./scrapyard.rb search -k key -y yard -p #{dir}")).to be_truthy
+    scrap("search -k key -y yard -p #{dir}")
 
     assert_cache(dir, contents)
   end
@@ -44,13 +48,13 @@ RSpec.describe "Commands" do
 
     it 'searches by mtime for multiple caches' do
 
-      expect(system("./scrapyard.rb search -k key -y yard -p #{cacheB}")).to be_truthy
+      scrap("search -k key -y yard -p #{cacheB}")
 
       assert_cache(cacheB, "b")
     end
 
     it 'searches by key preference' do
-      expect(system("./scrapyard.rb search -k key-A,key-B -y yard -p #{cacheA}")).to be_truthy
+      scrap("search -k key-A,key-B -y yard -p #{cacheA}")
 
       assert_cache(cacheA, "a")
     end
