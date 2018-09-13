@@ -1,5 +1,7 @@
 # Scrapyard
 
+[![CircleCI](https://circleci.com/gh/dgtized/scrapyard.svg?style=svg)](https://circleci.com/gh/dgtized/scrapyard)
+
 A simple cache for faster CI builds
 
 Search allows prefix matching of multiple cache keys for the most recent,
