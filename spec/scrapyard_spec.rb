@@ -13,7 +13,7 @@ RSpec.describe "Commands" do
   end
 
   def scrap(args)
-    expect(system("./scrapyard.rb #{args}")).to be_truthy
+    expect(system("bin/scrapyard #{args}")).to be_truthy
   end
 
   def make_cache(name, contents)

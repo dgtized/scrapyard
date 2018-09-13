@@ -7,7 +7,10 @@ Gem::Specification.new do |s|
   s.summary     = 'A simple cache for faster CI builds'
   s.authors     = ['Charles L.G. Comstock', 'Hardy Jones']
   s.email       = ['dgtized@gmail.com']
-  s.files       = Dir["**/*.rb"]
   s.homepage    = 'https://github.com/dgtized/scrapyard'
   s.license     = 'BSD-3-Clause'
+
+  s.files       = Dir["**/*.rb"] + ["bin/scrapyard"]
+  s.bindir      = "bin"
+  s.executables = "scrapyard"
 end
