@@ -17,21 +17,29 @@ def parse_options(args = ARGV)
   }
 
   parser = OptionParser.new(args) do |opts|
-    opts.banner = 'Usage: scrapyard.rb [command] [options]'
+    opts.banner = <<-BANNER
+    Usage: scrapyard [command] [options]
+
+    command is one of search,store,junk or crush
+      search: Searches yard for a cache key to restore in specified key order.
+        Keys can be prefixes, returning most recently created match
+      store: saves a list of paths into a tarball stored in the yard @ cache key
+      junk: deletes a cache key
+      crush: prunes stale cache keys from the yard
+
+    BANNER
     opts.on(
       '-k', '--keys KEY1,KEY2', Array,
-      'Specify keys for search or dumping in order of preference'
-    ) do |keys|
-      options[:keys] = keys
-    end
-    opts.on('-y', '--yard PATH', String,
-            'The directory the scrapyard is stored in.') do |path|
-      options[:yard] = path
-    end
-    opts.on('-p', '--paths PATH1,PATH2', Array,
-            'Paths to store in the scrapyard') do |paths|
-      options[:paths] = paths
-    end
+      'Specify keys for search or storage in order of preference'
+    ) { |keys| options[:keys] = keys }
+    opts.on(
+      '-y', '--yard PATH', String,
+      'The directory or S3 bucket the scrapyard is stored in.'
+    ) { |path| options[:yard] = path }
+    opts.on(
+      '-p', '--paths PATH1,PATH2', Array,
+      'Paths to store in the scrapyard or verify size after search'
+    ) { |paths| options[:paths] = paths }
     opts.on_tail('-v', '--verbose') do
       options[:verbose] = true
     end
