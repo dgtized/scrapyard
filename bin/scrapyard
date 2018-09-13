@@ -7,6 +7,7 @@ require 'pathname'
 require 'digest'
 require 'tempfile'
 require 'fileutils'
+require 'scrapyard'
 
 def parse_options(args = ARGV)
   options = {
@@ -33,6 +34,10 @@ def parse_options(args = ARGV)
     end
     opts.on_tail('-v', '--verbose') do
       options[:verbose] = true
+    end
+    opts.on_tail('--version') do
+      puts "Version: %s" % ::Scrapyard::VERSION
+      exit
     end
     opts.on_tail('-h', '--help') do
       puts opts
@@ -284,7 +289,7 @@ class AwsS3Yard < Yard
   end
 end
 
-class Scrapyard
+class CommandRunner
   def initialize(yard, log)
     @yard = Yard.for(yard, log)
     @log = log
@@ -327,13 +332,11 @@ class Scrapyard
   end
 end
 
-if $PROGRAM_NAME == __FILE__
-  options = parse_options
+options = parse_options
 
-  log = Logger.new(STDOUT)
-  log.level = options[:verbose] ? Logger::DEBUG : Logger::WARN
+log = Logger.new(STDOUT)
+log.level = options[:verbose] ? Logger::DEBUG : Logger::WARN
 
-  Scrapyard.new(options[:yard], log).send(
-    options[:command], options[:keys], options[:paths]
-  )
-end
+CommandRunner.new(options[:yard], log).send(
+  options[:command], options[:keys], options[:paths]
+)
