@@ -256,7 +256,7 @@ class AwsS3Yard < Yard
     key_paths.each do |key|
       prefix = Pathname.new(key).basename.to_s.tr('*', '')
       glob = files.select { |f| f[:file].start_with? prefix }
-      @log.debug "Scanning %s -> %p" % [key, glob.map(&:file)]
+      @log.debug "Scanning %s -> %p" % [key, glob.map { |x| x[:file] }]
       needle = glob.max_by { |f| f[:time] }
       return fetch(needle[:file]) if needle
     end
