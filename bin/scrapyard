@@ -24,8 +24,8 @@ def parse_options(args = ARGV)
       search: Searches yard for a cache key to restore in specified key order.
         Keys can be prefixes, returning most recently created match
       store: saves a list of paths into a tarball stored in the yard @ cache key
-      junk: deletes a cache key
-      crush: prunes stale cache keys from the yard
+      junk: deletes an exact cache key
+      crush: prunes cache keys from the yard older than 20 days
 
     BANNER
     opts.on(
