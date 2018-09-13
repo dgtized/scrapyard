@@ -4,4 +4,5 @@ module Scrapyard
   require 'scrapyard/key'
   require 'scrapyard/pack'
   require 'scrapyard/yard'
+  require 'scrapyard/runner'
 end
