@@ -90,35 +90,6 @@ def parse_options(args = ARGV)
   options
 end
 
-class Key
-  def initialize(key)
-    @key = key
-  end
-
-  def checksum!(log)
-    @key = @key.gsub(/(#\([^}]+\))/) do |match|
-      f = Pathname.new match[2..-2].strip
-      if f.exist?
-        log.debug "Including sha1 of #{f}"
-        Digest::SHA1.file(f).hexdigest
-      else
-        log.debug "File #{f} does not exist, ignoring checksum"
-        ''
-      end
-    end
-
-    self
-  end
-
-  def to_s
-    @key
-  end
-
-  def self.to_path(yard, keys, suffix, log)
-    keys.map { |k| yard.to_path + (Key.new(k).checksum!(log).to_s + suffix) }
-  end
-end
-
 # Save or restores from a tarball
 class Pack
   attr_reader :log
@@ -308,7 +279,7 @@ class CommandRunner
 
   def search(keys, paths)
     log.info "Searching for #{keys}"
-    key_paths = Key.to_path(@yard, keys, "*", log)
+    key_paths = Scrapyard::Key.to_path(@yard, keys, "*", log)
 
     if (cache = @yard.search(key_paths))
       exit(@pack.restore(cache, paths))
@@ -320,7 +291,7 @@ class CommandRunner
 
   def store(keys, paths)
     log.info "Storing #{keys}"
-    key_path = Key.to_path(@yard, keys, ".tgz", log).first.to_s
+    key_path = Scrapyard::Key.to_path(@yard, keys, ".tgz", log).first.to_s
 
     @yard.store(@pack.save(key_path, paths))
     exit 0
@@ -328,7 +299,7 @@ class CommandRunner
 
   def junk(keys, _paths)
     log.info "Junking #{keys}"
-    key_paths = Key.to_path(@yard, keys, ".tgz", log)
+    key_paths = Scrapyard::Key.to_path(@yard, keys, ".tgz", log)
     log.debug "Paths: %p" % key_paths.map(&:to_s)
     @yard.junk(key_paths)
     exit 0
