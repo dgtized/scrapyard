@@ -1,3 +1,6 @@
+require 'tempfile'
+require 'fileutils'
+
 module Scrapyard
   # Save or restores from a tarball
   class Pack

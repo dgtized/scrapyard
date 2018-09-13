@@ -3,10 +3,6 @@
 
 require 'optparse'
 require 'logger'
-require 'pathname'
-require 'digest'
-require 'tempfile'
-require 'fileutils'
 require 'scrapyard'
 
 def parse_options(args = ARGV)

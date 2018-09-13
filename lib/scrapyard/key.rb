@@ -1,3 +1,6 @@
+require 'pathname'
+require 'digest'
+
 module Scrapyard
   class Key
     def initialize(key)

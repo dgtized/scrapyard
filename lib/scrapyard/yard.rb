@@ -1,3 +1,5 @@
+require 'pathname'
+
 module Scrapyard
   # Yard Interface
   class Yard
