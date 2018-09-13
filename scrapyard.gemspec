@@ -13,4 +13,5 @@ Gem::Specification.new do |s|
   s.files       = Dir["**/*.rb"] + ["bin/scrapyard"]
   s.bindir      = "bin"
   s.executables = "scrapyard"
+  s.require_paths = ["lib"]
 end
