@@ -58,4 +58,17 @@ RSpec.describe "Commands" do
       assert_cache(cacheA, "a")
     end
   end
+
+  context "content sha" do
+    let(:content) { "tmp/bar.file" }
+    before { IO.write(content, "quux") }
+    after { File.delete content }
+
+    it "incorporates sha in key" do
+      scrap("store -k 'content-#(tmp/bar.file)' -y yard -p tmp")
+      expect(
+        File.exist?("yard/content-ae2ad9454f3af7fcb18c83969f99b20a788eddd1.tgz")
+      ).to be_truthy
+    end
+  end
 end
