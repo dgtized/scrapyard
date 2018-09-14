@@ -10,6 +10,7 @@ mkdir -p a_dir
 echo "content" > a_file
 echo "content" > a_dir/a_file
 YARD=scrapyard
+SCRAPYARD=bin/scrapyard
 
 echo "** Search"
 

@@ -1,0 +1,96 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require 'optparse'
+require 'logger'
+require 'scrapyard'
+
+def parse_options(args = ARGV)
+  options = {
+    keys: [],
+    yard: '/tmp/scrapyard',
+    paths: []
+  }
+
+  parser = OptionParser.new(args) do |opts|
+    opts.banner = <<-BANNER
+    Usage: scrapyard [command] [options]
+
+    command is one of search,store,junk or crush
+      search: Searches yard for a cache key to restore in specified key order.
+        Keys can be prefixes, returning most recently created match
+      store: saves a list of paths into a tarball stored in the yard @ cache key
+      junk: deletes an exact cache key
+      crush: prunes cache keys from the yard older than 20 days
+
+    BANNER
+    opts.on(
+      '-k', '--keys KEY1,KEY2', Array,
+      'Specify keys for search or storage in order of preference'
+    ) { |keys| options[:keys] = keys }
+    opts.on(
+      '-y', '--yard PATH', String,
+      'The directory or S3 bucket the scrapyard is stored in.'
+    ) { |path| options[:yard] = path }
+    opts.on(
+      '-p', '--paths PATH1,PATH2', Array,
+      'Paths to store in the scrapyard or verify size after search'
+    ) { |paths| options[:paths] = paths }
+    opts.on_tail('-v', '--verbose') do
+      options[:verbose] = true
+    end
+    opts.on_tail('--version') do
+      puts "Version: %s" % ::Scrapyard::VERSION
+      exit
+    end
+    opts.on_tail('-h', '--help') do
+      puts opts
+      exit
+    end
+  end.parse!
+
+  operations = {
+    search: 1,
+    store: 1,
+    junk: 0,
+    crush: 0
+  }
+
+  if args.empty?
+    puts "No command specified from #{operations.keys}"
+    puts opts
+    exit
+  end
+
+  command = args.shift.intern
+  options[:paths] += args # grab everything remaining after -- as a path
+
+  if (remaining = operations[command])
+    if options[:paths].size >= remaining
+      options[:command] = command
+    else
+      puts "#{command} requires paths"
+      puts parser
+      exit
+    end
+  else
+    puts "Unrecognized command #{command}"
+    puts parser
+    exit
+  end
+
+  if %i[search store junk].include?(command) && options[:keys].empty?
+    puts "Command #{command} requires at least one key argument"
+  end
+
+  options
+end
+
+options = parse_options
+
+log = Logger.new(STDOUT)
+log.level = options[:verbose] ? Logger::DEBUG : Logger::WARN
+
+Scrapyard::Runner.new(options[:yard], log).send(
+  options[:command], options[:keys], options[:paths]
+)
