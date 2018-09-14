@@ -15,6 +15,8 @@ Gem::Specification.new do |s|
   s.executables = "scrapyard"
   s.require_paths = ["lib"]
 
+  s.add_dependency('aws-sdk-s3', '~> 1')
+
   s.add_development_dependency('rspec', '~> 3')
   s.add_development_dependency('rspec_junit_formatter', '~> 0.4')
   s.add_development_dependency('rubocop', '~> 0')
