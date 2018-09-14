@@ -9,7 +9,7 @@ mkdir -p a_dir
 echo "content" > a_file
 echo "content" > a_dir/a_file
 YARD=scrapyard
-SCRAPYARD=bin/scrapyard
+SCRAPYARD="ruby -Ilib bin/scrapyard"
 
 echo "** Search"
 
@@ -32,11 +32,14 @@ $SCRAPYARD $VERBOSE store -k "key-#(a_file)" -y $YARD -p a_dir &&
 $SCRAPYARD $VERBOSE store -k "key" -y $YARD -p a_dir &&
     echo "SUCCESS"
 
-$SCRAPYARD $VERBOSE junk -k "key-#(a_file)" -y $YARD -p a_dir &&
+$SCRAPYARD $VERBOSE junk -k "key-#(a_file)" -y $YARD &&
     echo "SUCCESS"
 
 $SCRAPYARD $VERBOSE search -k "key-#(a_file)","key","k" -y $YARD -p a_dir &&
     echo "SUCCESS"
 
 $SCRAPYARD $VERBOSE crush -y $YARD &&
+    echo "SUCCESS"
+
+$SCRAPYARD $VERBOSE junk -k "key" -y $YARD &&
     echo "SUCCESS"
