@@ -95,7 +95,10 @@ module Scrapyard
   # Implement Yard using an S3 bucket as storage
   class AwsS3Yard < Yard
     def initialize(yard, log)
-      @bucket = yard
+      require 'aws-sdk-s3'
+      yard_name = yard.sub(%r{^s3://}, '').sub(%r{/$}, '')
+      # use $AWS_DEFAULT_REGION to specify region for now
+      @bucket = Aws::S3::Resource.new.bucket(yard_name)
       @log = log
     end
 
@@ -103,45 +106,37 @@ module Scrapyard
       '/tmp/'
     end
 
-    S3_CMD="aws s3"
-    AWS_LS = /(?<time>\d+-\d+-\d+ \d+:\d+:\d+)\s+(?<size>\d+)\s+(?<name>.*)$/
     def search(key_paths)
-      files = `#{S3_CMD} ls #{@bucket}`.chomp.split(/$/).map do |file|
-        if (m = file.match(AWS_LS))
-          { file: m['name'], size: m['size'], time: m['time'] }
-        else
-          @log.warn "Unable to parse #{file}"
-        end
-      end
+      files = @bucket.objects
 
       key_paths.each do |key|
         prefix = Pathname.new(key).basename.to_s.tr('*', '')
-        glob = files.select { |f| f[:file].start_with? prefix }
-        @log.debug "Scanning %s -> %p" % [key, glob.map { |x| x[:file] }]
-        needle = glob.max_by { |f| f[:time] }
-        return fetch(needle[:file]) if needle
+        glob = files.select { |f| f.key.start_with?(prefix) }
+        @log.debug "Scanning %s -> %p" % [prefix, glob.map(&:key)]
+        needle = glob.max_by(&:last_modified)
+        return fetch(needle.key) if needle
       end
 
       nil
     end
 
     def fetch(cache)
-      remote = @bucket + cache
       local = Pathname.new(to_path).join(cache)
-      system("#{S3_CMD} cp #{remote} #{local}")
+      @log.info "Downloading %s to %s" % [cache, local]
+      @bucket.object(cache).get(response_target: local)
       local
     end
 
     def store(cache)
-      remote_path = @bucket + Pathname.new(cache).basename.to_s
-      system("#{S3_CMD} cp #{cache} #{remote_path}")
+      key = Pathname.new(cache).basename.to_s
+      @log.info "Uploading %s to %s" % [cache, key]
+      @bucket.object(key).upload_file(cache)
     end
 
     def junk(key_paths)
-      key_paths.each do |key|
-        path = @bucket + Pathname.new(key).basename.to_s
-        system("#{S3_CMD} rm #{path}")
-      end
+      keys = key_paths.map { |x| File.basename(x) }
+      @log.info "Deleting %p" % keys
+      @bucket.delete_objects(delete: { objects: keys.map { |k| { key: k }} })
     end
   end
 end
