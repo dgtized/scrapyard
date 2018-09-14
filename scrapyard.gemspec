@@ -14,4 +14,8 @@ Gem::Specification.new do |s|
   s.bindir      = "bin"
   s.executables = "scrapyard"
   s.require_paths = ["lib"]
+
+  s.add_development_dependency('rspec', '~> 3')
+  s.add_development_dependency('rspec_junit_formatter', '~> 0.4')
+  s.add_development_dependency('rubocop', '~> 0')
 end

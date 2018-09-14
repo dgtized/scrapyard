@@ -1,8 +1,8 @@
 module Scrapyard
   VERSION = '0.2.0'
 
-  require 'scrapyard/key'
-  require 'scrapyard/pack'
-  require 'scrapyard/yard'
-  require 'scrapyard/runner'
+  require_relative 'scrapyard/key'
+  require_relative 'scrapyard/pack'
+  require_relative 'scrapyard/yard'
+  require_relative 'scrapyard/runner'
 end
