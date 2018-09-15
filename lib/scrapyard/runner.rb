@@ -15,7 +15,7 @@ module Scrapyard
       if (cache = @yard.search(key_paths))
         exit(@pack.restore(cache, paths))
       else
-        log.info 'Unable to find key(s): %p' % [paths.map(&:to_s)]
+        log.info 'Unable to find key(s): %p' % [keys.map(&:to_s)]
         exit 1
       end
     end
