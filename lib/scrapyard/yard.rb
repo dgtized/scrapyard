@@ -1,4 +1,5 @@
 require 'pathname'
+require 'benchmark'
 
 module Scrapyard
   # Yard Interface
@@ -122,15 +123,19 @@ module Scrapyard
 
     def fetch(cache)
       local = Pathname.new(to_path).join(cache)
-      @log.info "Downloading %s to %s" % [cache, local]
-      @bucket.object(cache).get(response_target: local)
+      duration = Benchmark.realtime do
+        @bucket.object(cache).get(response_target: local)
+      end
+      @log.info "Downloaded key %s" % [cache, duration]
       local
     end
 
     def store(cache)
       key = Pathname.new(cache).basename.to_s
-      @log.info "Uploading %s to %s" % [cache, key]
-      @bucket.object(key).upload_file(cache)
+      duration = Benchmark.realtime do
+        @bucket.object(key).upload_file(cache)
+      end
+      @log.info "Uploaded key %s (%.1f ms)" % [key, duration]
     end
 
     def junk(key_paths)
