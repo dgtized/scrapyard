@@ -126,7 +126,7 @@ module Scrapyard
       duration = Benchmark.realtime do
         @bucket.object(cache).get(response_target: local)
       end
-      @log.info "Downloaded key %s" % [cache, duration]
+      @log.info "Downloaded key %s (%.1f ms)" % [cache, duration * 1000]
       local
     end
 
@@ -135,7 +135,7 @@ module Scrapyard
       duration = Benchmark.realtime do
         @bucket.object(key).upload_file(cache)
       end
-      @log.info "Uploaded key %s (%.1f ms)" % [key, duration]
+      @log.info "Uploaded key %s (%.1f ms)" % [key, duration * 1000]
     end
 
     def junk(key_paths)
