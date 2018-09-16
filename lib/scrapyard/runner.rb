@@ -4,8 +4,8 @@ require 'fileutils'
 
 module Scrapyard
   class Runner
-    def initialize(yard, log)
-      @yard = Scrapyard::Yard.for(yard, log)
+    def initialize(yard, log, aws_config)
+      @yard = Scrapyard::Yard.for(yard, log, aws_config)
       @log = log
       @pack = Scrapyard::Pack.new(@log)
     end
