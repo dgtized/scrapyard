@@ -6,9 +6,12 @@ require 'benchmark'
 module Scrapyard
   # Yard Interface
   class Yard
-    def self.for(yard, log)
-      klass = yard =~ /^s3:/ ? AwsS3Yard : FileYard
-      @yard = klass.new(yard, log)
+    def self.for(yard, log, aws_config)
+      if yard =~ /^s3:/
+        AwsS3Yard.new(yard, log, aws_config)
+      else
+        FileYard.new(yard, log)
+      end
     end
 
     def to_path
@@ -97,11 +100,10 @@ module Scrapyard
 
   # Implement Yard using an S3 bucket as storage
   class AwsS3Yard < Yard
-    def initialize(yard, log)
+    def initialize(yard, log, aws_config)
       require 'aws-sdk-s3'
       @yard_name = yard.sub(%r{^s3://}, '').sub(%r{/$}, '')
-      # use $AWS_DEFAULT_REGION to specify region for now
-      @bucket = Aws::S3::Resource.new.bucket(@yard_name)
+      @bucket = Aws::S3::Resource.new(aws_config).bucket(@yard_name)
       @log = log
     end
 

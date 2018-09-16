@@ -13,6 +13,7 @@ end
 
 def parse_options(args = ARGV)
   options = {
+    aws_config: {},
     keys: [],
     yard: '/tmp/scrapyard',
     paths: [],
@@ -48,6 +49,10 @@ def parse_options(args = ARGV)
             "Empty paths and recreate before search for a clean slate") do |v|
       options[:initialize_paths] = v
     end
+    opts.on(
+      "-r", "--aws-region REGION", String,
+      "AWS S3 Region specifier (ie us-east-1, eu-central-1)"
+    ) { |v| options[:aws_config][:region] = v }
     opts.on_tail('-v', '--verbose') do
       options[:verbose] = true
     end
@@ -97,7 +102,7 @@ options = parse_options
 log = Logger.new(STDOUT)
 log.level = options[:verbose] ? Logger::DEBUG : Logger::WARN
 
-runner = Scrapyard::Runner.new(options[:yard], log)
+runner = Scrapyard::Runner.new(options[:yard], log, options[:aws_config])
 
 if options[:initialize_paths] && options[:command] == :search
   runner.initialize_paths((options[:paths]))
