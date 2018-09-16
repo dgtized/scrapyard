@@ -31,5 +31,9 @@ module Scrapyard
     def self.to_path(yard, keys, suffix, log)
       keys.map { |k| yard.to_path + (Key.new(k).checksum!(log).to_s + suffix) }
     end
+
+    def self.to_keys(keys, suffix, log)
+      keys.map { |k| Key.new(k).checksum!(log).to_s + suffix }
+    end
   end
 end
