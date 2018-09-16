@@ -13,13 +13,13 @@ module Scrapyard
     attr_reader :log
 
     def initialize_paths(paths)
-      log.info "Initializing paths #{paths}"
+      log.info "Initializing paths %p" % [paths]
       FileUtils.rmtree paths
       FileUtils.mkdir_p paths
     end
 
     def search(keys, paths)
-      log.info "Searching for #{keys}"
+      log.info "Searching for %p" % [keys]
       key_paths = Scrapyard::Key.to_path(@yard, keys, "*", log)
 
       if (cache = @yard.search(key_paths))
