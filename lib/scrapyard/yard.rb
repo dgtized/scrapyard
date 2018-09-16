@@ -142,8 +142,10 @@ module Scrapyard
 
     def junk(key_paths)
       keys = key_paths.map { |x| File.basename(x) }
-      @log.info "Deleting %p" % keys
-      @bucket.delete_objects(delete: { objects: keys.map { |k| { key: k }} })
+      duration = Benchmark.realtime do
+        @bucket.delete_objects(delete: { objects: keys.map { |k| { key: k }} })
+      end
+      @log.info "Deleted %p (%.1f ms)" % [keys, duration * 1000]
     end
   end
 end
