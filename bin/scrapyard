@@ -87,6 +87,8 @@ def parse_options(args = ARGV)
 
   if %i[search store junk].include?(command) && options[:keys].empty?
     puts "Command #{command} requires at least one key argument"
+    puts parser
+    exit
   end
 
   options
