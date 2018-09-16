@@ -5,6 +5,12 @@ require 'optparse'
 require 'logger'
 require 'scrapyard'
 
+def error(parser, msg)
+  puts msg
+  puts parser
+  exit
+end
+
 def parse_options(args = ARGV)
   options = {
     keys: [],
@@ -63,9 +69,7 @@ def parse_options(args = ARGV)
   }
 
   if args.empty?
-    puts "No command specified from #{operations.keys}"
-    puts opts
-    exit
+    error parser, "No command specified from #{operations.keys}"
   end
 
   command = args.shift.intern
@@ -75,20 +79,14 @@ def parse_options(args = ARGV)
     if options[:paths].size >= remaining
       options[:command] = command
     else
-      puts "#{command} requires paths"
-      puts parser
-      exit
+      error parser, "#{command} requires paths"
     end
   else
-    puts "Unrecognized command #{command}"
-    puts parser
-    exit
+    error parser, "Unrecognized command #{command}"
   end
 
   if %i[search store junk].include?(command) && options[:keys].empty?
-    puts "Command #{command} requires at least one key argument"
-    puts parser
-    exit
+    error parser, "Command #{command} requires at least one key argument"
   end
 
   options
