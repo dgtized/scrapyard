@@ -51,7 +51,7 @@ module Scrapyard
     def search(key_paths)
       key_paths.each do |path|
         glob = Pathname.glob(path.to_s)
-        @log.debug "Scanning %s -> %p" % [path,glob.map(&:to_s)]
+        @log.debug "Scanning %s -> %p" % [path, glob.map(&:to_s)]
         cache = glob.max_by(&:mtime)
         return cache if cache # return on first match
       end
