@@ -39,7 +39,7 @@ module Scrapyard
     def execute(cmd)
       rval = nil
       duration = Benchmark.realtime { rval = system(cmd) }
-      log.debug "Executing[%s] (%.1f ms)" % [cmd, duration * 1000]
+      log.info "Executing[%s] (%.1f ms)" % [cmd, duration * 1000]
       rval
     end
   end
