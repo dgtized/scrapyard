@@ -44,9 +44,11 @@ scrapyard.rb crush --yard /tmp/cache
 ## S3
 
 ```
-scrapyard.rb store --yard s3://scrapyard/ --key "foo" --paths a
+scrapyard --aws-region us-east-1 --yard s3://scrapyard/
+          store --key "foo" --paths a
 ```
 
 ```
-scrapyard.rb search --yard s3://scrapyard/ --key "foo","bar"
+scrapyard --aws-region us-east-1 --yard s3://scrapyard/
+          search --key "foo,bar" --paths a
 ```
