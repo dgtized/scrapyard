@@ -19,15 +19,15 @@ module Scrapyard
       @log.error "not implemented"
     end
 
-    def search(key_paths)
+    def search(_key_paths)
       @log.error "not implemented"
     end
 
-    def store(cache)
+    def store(_cache)
       @log.error "not implemented"
     end
 
-    def junk(key_paths)
+    def junk(_key_paths)
       @log.error "not implemented"
     end
 

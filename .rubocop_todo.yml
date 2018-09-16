@@ -12,13 +12,6 @@ Layout/SpaceAfterComma:
   Exclude:
     - 'lib/scrapyard/yard.rb'
 
-# Offense count: 3
-# Cop supports --auto-correct.
-# Configuration parameters: AllowUnusedKeywordArguments, IgnoreEmptyMethods.
-Lint/UnusedMethodArgument:
-  Exclude:
-    - 'lib/scrapyard/yard.rb'
-
 # Offense count: 2
 Metrics/AbcSize:
   Max: 40
