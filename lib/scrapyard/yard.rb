@@ -99,9 +99,9 @@ module Scrapyard
   class AwsS3Yard < Yard
     def initialize(yard, log)
       require 'aws-sdk-s3'
-      yard_name = yard.sub(%r{^s3://}, '').sub(%r{/$}, '')
+      @yard_name = yard.sub(%r{^s3://}, '').sub(%r{/$}, '')
       # use $AWS_DEFAULT_REGION to specify region for now
-      @bucket = Aws::S3::Resource.new.bucket(yard_name)
+      @bucket = Aws::S3::Resource.new.bucket(@yard_name)
       @log = log
     end
 
@@ -110,7 +110,12 @@ module Scrapyard
     end
 
     def search(key_paths)
-      files = @bucket.objects
+      files = []
+      duration = Benchmark.realtime do
+        files = @bucket.objects.to_a
+      end
+      @log.info("Found %d objects in %s (%.1f ms)" %
+                [files.count, @yard_name, duration * 1000])
 
       key_paths.each do |key|
         prefix = Pathname.new(key).basename.to_s.tr('*', '')
