@@ -11,6 +11,9 @@ Layout/SpaceInsideHashLiteralBraces:
 Layout/SpaceInsideParens:
   Enabled: false
 
+Layout/DotPosition:
+  EnforcedStyle: trailing
+
 # caring about '' or "" seems overly pedantic
 Style/StringLiterals:
   Enabled: false

@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 module Scrapyard
-  VERSION = '0.3.0'
+  VERSION = '0.4.0'
 
   require_relative 'scrapyard/key'
   require_relative 'scrapyard/pack'

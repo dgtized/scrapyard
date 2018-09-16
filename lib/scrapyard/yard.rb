@@ -1,4 +1,7 @@
+# frozen_string_literal: true
+
 require 'pathname'
+require 'benchmark'
 
 module Scrapyard
   # Yard Interface
@@ -16,15 +19,15 @@ module Scrapyard
       @log.error "not implemented"
     end
 
-    def search(key_paths)
+    def search(_key_paths)
       @log.error "not implemented"
     end
 
-    def store(cache)
+    def store(_cache)
       @log.error "not implemented"
     end
 
-    def junk(key_paths)
+    def junk(_key_paths)
       @log.error "not implemented"
     end
 
@@ -47,8 +50,8 @@ module Scrapyard
 
     def search(key_paths)
       key_paths.each do |path|
-        glob = Pathname.glob(path.to_s)
-        @log.debug "Scanning %s -> %p" % [path,glob.map(&:to_s)]
+        glob = Pathname.glob((to_path + path).to_s + "*")
+        @log.debug "Scanning %s -> %p" % [path, glob.map(&:to_s)]
         cache = glob.max_by(&:mtime)
         return cache if cache # return on first match
       end
@@ -96,9 +99,9 @@ module Scrapyard
   class AwsS3Yard < Yard
     def initialize(yard, log)
       require 'aws-sdk-s3'
-      yard_name = yard.sub(%r{^s3://}, '').sub(%r{/$}, '')
+      @yard_name = yard.sub(%r{^s3://}, '').sub(%r{/$}, '')
       # use $AWS_DEFAULT_REGION to specify region for now
-      @bucket = Aws::S3::Resource.new.bucket(yard_name)
+      @bucket = Aws::S3::Resource.new.bucket(@yard_name)
       @log = log
     end
 
@@ -107,10 +110,14 @@ module Scrapyard
     end
 
     def search(key_paths)
-      files = @bucket.objects
+      files = []
+      duration = Benchmark.realtime do
+        files = @bucket.objects.to_a
+      end
+      @log.info("Found %d objects in %s (%.1f ms)" %
+                [files.count, @yard_name, duration * 1000])
 
-      key_paths.each do |key|
-        prefix = Pathname.new(key).basename.to_s.tr('*', '')
+      key_paths.each do |prefix|
         glob = files.select { |f| f.key.start_with?(prefix) }
         @log.debug "Scanning %s -> %p" % [prefix, glob.map(&:key)]
         needle = glob.max_by(&:last_modified)
@@ -122,21 +129,27 @@ module Scrapyard
 
     def fetch(cache)
       local = Pathname.new(to_path).join(cache)
-      @log.info "Downloading %s to %s" % [cache, local]
-      @bucket.object(cache).get(response_target: local)
+      duration = Benchmark.realtime do
+        @bucket.object(cache).get(response_target: local)
+      end
+      @log.info "Downloaded key %s (%.1f ms)" % [cache, duration * 1000]
       local
     end
 
     def store(cache)
       key = Pathname.new(cache).basename.to_s
-      @log.info "Uploading %s to %s" % [cache, key]
-      @bucket.object(key).upload_file(cache)
+      duration = Benchmark.realtime do
+        @bucket.object(key).upload_file(cache)
+      end
+      @log.info "Uploaded key %s (%.1f ms)" % [key, duration * 1000]
     end
 
     def junk(key_paths)
       keys = key_paths.map { |x| File.basename(x) }
-      @log.info "Deleting %p" % keys
-      @bucket.delete_objects(delete: { objects: keys.map { |k| { key: k }} })
+      duration = Benchmark.realtime do
+        @bucket.delete_objects(delete: { objects: keys.map { |k| { key: k }} })
+      end
+      @log.info "Deleted %p (%.1f ms)" % [keys, duration * 1000]
     end
   end
 end

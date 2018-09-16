@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+require 'benchmark'
 require 'tempfile'
 require 'fileutils'
 
@@ -12,9 +15,7 @@ module Scrapyard
     def save(cache, paths)
       Tempfile.open('scrapyard') do |temp|
         temp_path = temp.path
-        cmd = "tar czf %s %s" % [temp_path, paths.join(" ")]
-        log.debug "Executing [#{cmd}]"
-        system(cmd)
+        execute("tar czf %s %s" % [temp_path, paths.join(" ")])
         FileUtils.mv temp_path, cache
         system("touch #{cache}")
       end
@@ -25,14 +26,21 @@ module Scrapyard
     end
 
     def restore(cache, paths)
-      cmd = "tar zxf #{cache}"
       log.debug "Found scrap in #{cache}"
-      log.info "Executing [#{cmd}]"
-      rval = system(cmd)
+      rval = execute("tar zxf #{cache}")
       unless paths.empty?
         log.info "Restored: %s" % %x|du -sh #{paths.join(" ")}|.chomp
       end
       rval == true ? 0 : 255
+    end
+
+    private
+
+    def execute(cmd)
+      rval = nil
+      duration = Benchmark.realtime { rval = system(cmd) }
+      log.info "Executing[%s] (%.1f ms)" % [cmd, duration * 1000]
+      rval
     end
   end
 end

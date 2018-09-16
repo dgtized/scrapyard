@@ -5,11 +5,19 @@ require 'optparse'
 require 'logger'
 require 'scrapyard'
 
+def error(parser, msg)
+  puts msg
+  puts parser
+  exit
+end
+
 def parse_options(args = ARGV)
   options = {
     keys: [],
     yard: '/tmp/scrapyard',
-    paths: []
+    paths: [],
+    initialize_paths: false,
+    verbose: false
   }
 
   parser = OptionParser.new(args) do |opts|
@@ -36,6 +44,10 @@ def parse_options(args = ARGV)
       '-p', '--paths PATH1,PATH2', Array,
       'Paths to store in the scrapyard or verify size after search'
     ) { |paths| options[:paths] = paths }
+    opts.on("-i", "--[no-]initialize-paths",
+            "Empty paths and recreate before search for a clean slate") do |v|
+      options[:initialize_paths] = v
+    end
     opts.on_tail('-v', '--verbose') do
       options[:verbose] = true
     end
@@ -57,9 +69,7 @@ def parse_options(args = ARGV)
   }
 
   if args.empty?
-    puts "No command specified from #{operations.keys}"
-    puts opts
-    exit
+    error parser, "No command specified from #{operations.keys}"
   end
 
   command = args.shift.intern
@@ -69,18 +79,14 @@ def parse_options(args = ARGV)
     if options[:paths].size >= remaining
       options[:command] = command
     else
-      puts "#{command} requires paths"
-      puts parser
-      exit
+      error parser, "#{command} requires paths"
     end
   else
-    puts "Unrecognized command #{command}"
-    puts parser
-    exit
+    error parser, "Unrecognized command #{command}"
   end
 
   if %i[search store junk].include?(command) && options[:keys].empty?
-    puts "Command #{command} requires at least one key argument"
+    error parser, "Command #{command} requires at least one key argument"
   end
 
   options
@@ -91,6 +97,12 @@ options = parse_options
 log = Logger.new(STDOUT)
 log.level = options[:verbose] ? Logger::DEBUG : Logger::WARN
 
-Scrapyard::Runner.new(options[:yard], log).send(
+runner = Scrapyard::Runner.new(options[:yard], log)
+
+if options[:initialize_paths] && options[:command] == :search
+  runner.initialize_paths((options[:paths]))
+end
+
+runner.send(
   options[:command], options[:keys], options[:paths]
 )

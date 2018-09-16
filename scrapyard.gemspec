@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative 'lib/scrapyard'
 
 Gem::Specification.new do |s|

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 require 'tmpdir'
@@ -57,6 +59,18 @@ RSpec.describe "Commands" do
 
       assert_cache(cacheA, "a")
     end
+  end
+
+  it "initializes paths" do
+    path = Dir.mktmpdir(nil, "tmp") do |dir|
+      IO.write("#{dir}/foo", "nothing")
+      dir
+    end
+
+    expect(system("ruby -Ilib bin/scrapyard search -i -k missing -p #{path}")).to be_falsey
+
+    expect(Dir.exist?(path)).to be_truthy
+    expect(File.exist?(path + "/foo")).to be_falsey
   end
 
   context "content sha" do
