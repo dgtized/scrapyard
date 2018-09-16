@@ -50,7 +50,7 @@ module Scrapyard
 
     def search(key_paths)
       key_paths.each do |path|
-        glob = Pathname.glob(path.to_s)
+        glob = Pathname.glob((to_path + path).to_s + "*")
         @log.debug "Scanning %s -> %p" % [path, glob.map(&:to_s)]
         cache = glob.max_by(&:mtime)
         return cache if cache # return on first match
@@ -117,8 +117,7 @@ module Scrapyard
       @log.info("Found %d objects in %s (%.1f ms)" %
                 [files.count, @yard_name, duration * 1000])
 
-      key_paths.each do |key|
-        prefix = Pathname.new(key).basename.to_s.tr('*', '')
+      key_paths.each do |prefix|
         glob = files.select { |f| f.key.start_with?(prefix) }
         @log.debug "Scanning %s -> %p" % [prefix, glob.map(&:key)]
         needle = glob.max_by(&:last_modified)
