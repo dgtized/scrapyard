@@ -24,16 +24,28 @@ module Scrapyard
       self
     end
 
+    def translate!(log)
+      key = @key.gsub(/[^a-zA-Z0-9_\-\.]/, "!")
+      log.debug "Translated key to %s" % key if key != @key
+      @key = key
+      self
+    end
+
+    def process!(log)
+      checksum!(log).translate!(log)
+      self
+    end
+
     def to_s
       @key
     end
 
     def self.to_path(yard, keys, suffix, log)
-      keys.map { |k| yard.to_path + (Key.new(k).checksum!(log).to_s + suffix) }
+      keys.map { |k| yard.to_path + (Key.new(k).process!(log).to_s + suffix) }
     end
 
     def self.to_keys(keys, suffix, log)
-      keys.map { |k| Key.new(k).checksum!(log).to_s + suffix }
+      keys.map { |k| Key.new(k).process!(log).to_s + suffix }
     end
   end
 end

@@ -18,4 +18,24 @@ RSpec.describe Scrapyard::Key do
         to eq %w[a.tgz b.tgz]
     end
   end
+
+  context "valid keys" do
+    it "only allows legal characters" do
+      {
+        "a" => "a",
+        "!" => "!",
+        "[b]" => "!b!",
+        "{c}" => "!c!",
+        "(b)" => "!b!",
+        "'a'" => "!a!",
+        '"a"' => "!a!",
+        ".-_" => ".-_",
+        "a/b" => "a!b",
+        "a/=b" => "a!!b"
+      }.each do |example, result|
+        expect(Scrapyard::Key.new(example).process!(double(debug: nil)).to_s).
+          to eq(result)
+      end
+    end
+  end
 end
