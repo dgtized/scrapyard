@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'benchmark'
 require 'tempfile'
 require 'fileutils'
