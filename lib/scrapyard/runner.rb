@@ -1,3 +1,5 @@
+require 'fileutils'
+
 module Scrapyard
   class Runner
     def initialize(yard, log)
@@ -7,6 +9,12 @@ module Scrapyard
     end
 
     attr_reader :log
+
+    def initialize_paths(paths)
+      log.info "Initializing paths #{paths}"
+      FileUtils.rmtree paths
+      FileUtils.mkdir_p paths
+    end
 
     def search(keys, paths)
       log.info "Searching for #{keys}"

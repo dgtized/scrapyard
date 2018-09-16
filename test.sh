@@ -21,7 +21,7 @@ echo "** Store/Search"
 $SCRAPYARD $VERBOSE store -k "key-#(a_file)" -y $YARD -p a_dir &&
     echo "SUCCESS"
 
-$SCRAPYARD $VERBOSE search -k "key-#(a_file)" -y $YARD -p a_dir &&
+$SCRAPYARD $VERBOSE search -i -k "key-#(a_file)" -y $YARD -p a_dir &&
     echo "SUCCESS"
 
 echo "** Multi Key Store/Junk/Search"
