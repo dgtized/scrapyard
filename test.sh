@@ -2,6 +2,7 @@
 
 set -exuo pipefail
 
+SCRAPYARD=${1:-./scrapyard.rb}
 VERBOSE="-v"
 
 rm -rf a_dir a_file scrapyard
