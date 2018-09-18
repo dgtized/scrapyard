@@ -19,7 +19,7 @@ RSpec.describe Scrapyard::Yard do
       )
 
       expect(yard.search(["key"])).to eq(Pathname.new("/tmp/key.tgz"))
-      expect(yard.search(["foo", "key"])).to eq(Pathname.new("/tmp/key.tgz"))
+      expect(yard.search(%w[foo key])).to eq(Pathname.new("/tmp/key.tgz"))
     end
 
     it "finds most recent key when bucket contains multiple matches" do
