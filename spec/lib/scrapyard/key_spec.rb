@@ -30,6 +30,12 @@ RSpec.describe Scrapyard::Key do
         expect(key.to_s).to eq "key-f1d2d2f924e986ac86fdf7b36c94bcdf32beec15"
       end
     end
+
+    it "recovers from missing checksum file with empty string" do
+      expect(log).to receive(:warn).with(/File missing-file does not exist/)
+      key = Scrapyard::Key.new("key-#(missing-file)", log)
+      expect(key.to_s).to eq "key-"
+    end
   end
 
   let(:log) { double(warn: nil) }
