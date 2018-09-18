@@ -19,6 +19,7 @@ RSpec.describe Scrapyard::Key do
     end
   end
 
+  let(:log) { double(debug: nil) }
   context "valid keys" do
     it "only allows legal characters" do
       {
@@ -33,7 +34,7 @@ RSpec.describe Scrapyard::Key do
         "a/b" => "a!b",
         "a/=b" => "a!!b"
       }.each do |example, result|
-        expect(Scrapyard::Key.new(example).process!(double(debug: nil)).to_s).
+        expect(Scrapyard::Key.new(example, log).process!.to_s).
           to eq(result)
       end
     end
