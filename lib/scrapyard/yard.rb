@@ -2,6 +2,7 @@
 
 require 'pathname'
 require 'benchmark'
+require 'aws-sdk-s3'
 
 module Scrapyard
   # Yard Interface
