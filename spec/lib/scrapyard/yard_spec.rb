@@ -43,6 +43,7 @@ RSpec.describe Scrapyard::Yard do
       )
 
       expect(yard.search(["key"])).to eq(Pathname.new("/tmp/key-1.tgz"))
+      expect(yard.search(["foo", "bar"])).to be_nil
       expect(yard.search(["key-2", "key"])).to eq(Pathname.new("/tmp/key-2.tgz"))
     end
   end
