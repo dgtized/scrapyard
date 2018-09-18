@@ -4,6 +4,7 @@ require 'pathname'
 require 'digest'
 
 module Scrapyard
+  # Translates keys into legal names and handles checksum syntax
   class Key
     def initialize(key)
       @key = key

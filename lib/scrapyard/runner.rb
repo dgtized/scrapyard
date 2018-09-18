@@ -3,6 +3,7 @@
 require 'fileutils'
 
 module Scrapyard
+  # Imperative shell interfacing between CLI & Yard implementations
   class Runner
     def initialize(yard, log, aws_config)
       @yard = Scrapyard::Yard.for(yard, log, aws_config)
