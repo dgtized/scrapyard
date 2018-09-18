@@ -19,9 +19,10 @@ RSpec.describe Scrapyard::Yard do
       )
 
       expect(yard.search(["key"])).to eq(Pathname.new("/tmp/key.tgz"))
+      expect(yard.search(["foo", "key"])).to eq(Pathname.new("/tmp/key.tgz"))
     end
 
-    it "finds most recent key when matching multiple" do
+    it "finds most recent key when bucket contains multiple matches" do
       s3.stub_responses(
         :list_objects, contents: [
           {key: 'key-old.tgz', last_modified: Time.now - 100},
@@ -30,6 +31,7 @@ RSpec.describe Scrapyard::Yard do
       )
 
       expect(yard.search(["key"])).to eq(Pathname.new("/tmp/key-new.tgz"))
+      expect(yard.search(["key-old", "key"])).to eq(Pathname.new("/tmp/key-old.tgz"))
     end
   end
 end
