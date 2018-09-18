@@ -12,6 +12,20 @@ module Scrapyard
       @key = translate(checksum(key))
     end
 
+    def to_s
+      @key
+    end
+
+    def self.to_path(yard, keys, suffix, log)
+      keys.map { |k| yard.to_path + (Key.new(k, log).to_s + suffix) }
+    end
+
+    def self.to_keys(keys, suffix, log)
+      keys.map { |k| Key.new(k, log).to_s + suffix }
+    end
+
+    private
+
     def checksum(key)
       key.gsub(/(#\([^}]+\))/) do |match|
         f = Pathname.new match[2..-2].strip
@@ -29,18 +43,6 @@ module Scrapyard
       translated = key.gsub(/[^a-zA-Z0-9_\-\.]/, "!")
       log.warn "Translated key to %s" % key if key != translated
       translated
-    end
-
-    def to_s
-      @key
-    end
-
-    def self.to_path(yard, keys, suffix, log)
-      keys.map { |k| yard.to_path + (Key.new(k, log).to_s + suffix) }
-    end
-
-    def self.to_keys(keys, suffix, log)
-      keys.map { |k| Key.new(k, log).to_s + suffix }
     end
   end
 end
