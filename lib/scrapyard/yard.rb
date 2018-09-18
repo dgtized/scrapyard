@@ -6,6 +6,12 @@ require 'aws-sdk-s3'
 
 module Scrapyard
   # Yard Interface
+  # Derived classes should implement
+  # #to_path
+  # #search
+  # #store
+  # #junk
+  # #crush
   class Yard
     def self.for(yard, log, aws_config)
       if yard =~ /^s3:/
@@ -13,30 +19,6 @@ module Scrapyard
       else
         FileYard.new(yard, log)
       end
-    end
-
-    def to_path
-      @log.error "not implemented"
-    end
-
-    def init
-      @log.error "not implemented"
-    end
-
-    def search(_key_paths)
-      @log.error "not implemented"
-    end
-
-    def store(_cache)
-      @log.error "not implemented"
-    end
-
-    def junk(_key_paths)
-      @log.error "not implemented"
-    end
-
-    def crush
-      @log.error "not_implemented"
     end
   end
 
@@ -153,6 +135,10 @@ module Scrapyard
         @bucket.delete_objects(delete: { objects: keys.map { |k| { key: k }} })
       end
       @log.info "Deleted %p (%.1f ms)" % [keys, duration * 1000]
+    end
+
+    def crush
+      @log.error "Not Implemented: prefer s3 key expiration rules"
     end
   end
 end
