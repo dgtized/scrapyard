@@ -4,6 +4,8 @@ require "spec_helper"
 require "scrapyard/key"
 
 RSpec.describe Scrapyard::Key do
+  let(:log) { double }
+
   context ".to_path" do
     it "adds suffixes to array with path" do
       yard = double(to_path: 'yard/')
@@ -20,7 +22,6 @@ RSpec.describe Scrapyard::Key do
   end
 
   context "checksum" do
-    let(:log) { double }
     it "converts #(file) syntax to checksum" do
       expect(log).to receive(:debug).with(/Including sha1/)
       Tempfile.open("scrapyard") do |temp|
@@ -38,8 +39,7 @@ RSpec.describe Scrapyard::Key do
     end
   end
 
-  let(:log) { double(warn: nil) }
-  context "valid keys" do
+  context "translation" do
     it "only allows legal characters" do
       {
         "a" => "a",
@@ -53,6 +53,7 @@ RSpec.describe Scrapyard::Key do
         "a/b" => "a!b",
         "a/=b" => "a!!b"
       }.each do |example, result|
+        expect(log).to receive(:warn).with(/Translated key to/) if example != result
         expect(Scrapyard::Key.new(example, log).to_s).
           to eq(result)
       end
