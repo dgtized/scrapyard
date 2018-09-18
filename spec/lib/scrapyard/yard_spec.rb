@@ -33,5 +33,17 @@ RSpec.describe Scrapyard::Yard do
       expect(yard.search(["key"])).to eq(Pathname.new("/tmp/key-new.tgz"))
       expect(yard.search(["key-old", "key"])).to eq(Pathname.new("/tmp/key-old.tgz"))
     end
+
+    it "finds first matching prefix when matching multiple" do
+      s3.stub_responses(
+        :list_objects, contents: [
+          {key: 'key-1.tgz', last_modified: Time.now},
+          {key: 'key-2.tgz', last_modified: Time.now}
+        ]
+      )
+
+      expect(yard.search(["key"])).to eq(Pathname.new("/tmp/key-1.tgz"))
+      expect(yard.search(["key-2", "key"])).to eq(Pathname.new("/tmp/key-2.tgz"))
+    end
   end
 end
