@@ -19,6 +19,19 @@ RSpec.describe Scrapyard::Key do
     end
   end
 
+  context "checksum" do
+    let(:log) { double }
+    it "converts #(file) syntax to checksum" do
+      expect(log).to receive(:debug).with(/Including sha1/)
+      Tempfile.open("scrapyard") do |temp|
+        temp.puts "foo"
+        temp.close
+        key = Scrapyard::Key.new("key-#(%s)" % [temp.path], log)
+        expect(key.to_s).to eq "key-f1d2d2f924e986ac86fdf7b36c94bcdf32beec15"
+      end
+    end
+  end
+
   let(:log) { double(warn: nil) }
   context "valid keys" do
     it "only allows legal characters" do
