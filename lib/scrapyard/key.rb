@@ -19,7 +19,7 @@ module Scrapyard
           log.debug "Including sha1 of #{f}"
           Digest::SHA1.file(f).hexdigest
         else
-          log.debug "File #{f} does not exist, ignoring checksum"
+          log.warn "File #{f} does not exist, ignoring checksum"
           ''
         end
       end
@@ -29,7 +29,7 @@ module Scrapyard
 
     def translate!
       key = @key.gsub(/[^a-zA-Z0-9_\-\.]/, "!")
-      log.debug "Translated key to %s" % key if key != @key
+      log.warn "Translated key to %s" % key if key != @key
       @key = key
       self
     end

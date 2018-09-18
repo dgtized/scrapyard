@@ -19,7 +19,7 @@ RSpec.describe Scrapyard::Key do
     end
   end
 
-  let(:log) { double(debug: nil) }
+  let(:log) { double(warn: nil) }
   context "valid keys" do
     it "only allows legal characters" do
       {
