@@ -20,7 +20,8 @@ module Scrapyard
         system("touch #{cache}")
       end
 
-      log.info "Created: %s" % %x|ls -lah #{cache}|.chomp
+      contents = %x|ls -lah #{cache}|
+      log.info "Created: \n%s" % contents.chomp
 
       cache
     end
@@ -29,7 +30,8 @@ module Scrapyard
       log.debug "Found scrap in #{cache}"
       rval = execute("tar zxf #{cache}")
       unless paths.empty?
-        log.info "Restored: %s" % %x|du -sh #{paths.join(" ")}|.chomp
+        contents = %x|du -sh #{paths.join(" ")}|
+        log.info "Restored: \n%s" % contents.chomp
       end
       rval == true ? 0 : 255
     end
