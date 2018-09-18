@@ -34,7 +34,7 @@ RSpec.describe Scrapyard::Key do
         "a/b" => "a!b",
         "a/=b" => "a!!b"
       }.each do |example, result|
-        expect(Scrapyard::Key.new(example, log).process!.to_s).
+        expect(Scrapyard::Key.new(example, log).to_s).
           to eq(result)
       end
     end
