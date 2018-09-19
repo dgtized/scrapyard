@@ -24,10 +24,10 @@ module Scrapyard
       key_paths = Scrapyard::Key.to_keys(keys, @yard.to_path, "", log)
 
       if (cache = @yard.search(key_paths))
-        exit(@pack.restore(cache, paths))
+        @pack.restore(cache, paths)
       else
         log.info 'Unable to find key(s): %p' % [keys.map(&:to_s)]
-        exit 1
+        1
       end
     end
 
@@ -38,7 +38,7 @@ module Scrapyard
       # store accepts multiple keys but only uses the first, this ensures it's
       # easy to re-use values between search and store.
       @yard.store(@pack.save(key_path.first.to_s, paths))
-      exit 0
+      0
     end
 
     def junk(keys, _paths)
@@ -46,12 +46,12 @@ module Scrapyard
       key_paths = Scrapyard::Key.to_path(@yard, keys, ".tgz", log)
       log.debug "Paths: %p" % key_paths.map(&:to_s)
       @yard.junk(key_paths)
-      exit 0
+      0
     end
 
     def crush(_keys, _paths)
       @yard.crush
-      exit 0
+      0
     end
   end
 end

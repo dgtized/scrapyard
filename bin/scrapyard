@@ -108,6 +108,8 @@ if options[:initialize_paths] && options[:command] == :search
   runner.initialize_paths((options[:paths]))
 end
 
-runner.send(
+retval = runner.send(
   options[:command], options[:keys], options[:paths]
 )
+
+exit retval
