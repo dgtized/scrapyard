@@ -18,7 +18,7 @@ module Scrapyard
     end
 
     def local
-      (@to_path + @key).to_s
+      @to_path + @key
     end
 
     def self.to_path(yard, keys, suffix, log)
@@ -28,7 +28,7 @@ module Scrapyard
     end
 
     def self.to_keys(keys, to_path, suffix, log)
-      keys.map { |k| Key.new(k, to_path, log).to_s + suffix }
+      keys.map { |k| Key.new(k + suffix, to_path, log) }
     end
 
     private

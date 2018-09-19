@@ -17,8 +17,9 @@ RSpec.describe Scrapyard::Key do
 
   context ".to_keys" do
     it "adds suffixes to array" do
-      expect(Scrapyard::Key.to_keys(%w[a b], "", ".tgz", anything)).
-        to eq %w[a.tgz b.tgz]
+      keys = Scrapyard::Key.to_keys(%w[a b], "prefix/", ".tgz", anything)
+      expect(keys.map(&:to_s)).to eq %w[a.tgz b.tgz]
+      expect(keys.map(&:local)).to eq %w[prefix/a.tgz prefix/b.tgz]
     end
   end
 
@@ -43,7 +44,7 @@ RSpec.describe Scrapyard::Key do
   context "local" do
     it "prefixes key with path" do
       key = Scrapyard::Key.new("key", Pathname.new("local"), log)
-      expect(key.local).to eq "local/key"
+      expect(key.local).to eq Pathname.new("local/key")
     end
   end
 

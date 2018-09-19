@@ -21,7 +21,7 @@ module Scrapyard
 
     def search(keys, paths)
       log.info "Searching for %p" % [keys]
-      key_paths = Scrapyard::Key.to_keys(keys, @yard.to_path, "", log)
+      key_paths = Scrapyard::Key.to_keys(keys, @yard.to_path, "", log).map(&:to_s)
 
       if (cache = @yard.search(key_paths))
         @pack.restore(cache, paths)
@@ -43,7 +43,7 @@ module Scrapyard
 
     def junk(keys, _paths)
       log.info "Junking #{keys}"
-      key_paths = Scrapyard::Key.to_path(@yard, keys, ".tgz", log)
+      key_paths = Scrapyard::Key.to_keys(keys, @yard.to_path, ".tgz", log)
       log.debug "Paths: %p" % key_paths.map(&:to_s)
       @yard.junk(key_paths)
       0

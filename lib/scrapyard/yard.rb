@@ -50,7 +50,7 @@ module Scrapyard
     end
 
     def junk(key_paths)
-      key_paths.select(&:exist?).each(&:delete)
+      key_paths.map(&:local).select(&:exist?).each(&:delete)
     end
 
     def crush
@@ -130,9 +130,10 @@ module Scrapyard
     end
 
     def junk(key_paths)
-      keys = key_paths.map { |x| File.basename(x) }
       duration = Benchmark.realtime do
-        @bucket.delete_objects(delete: { objects: keys.map { |k| { key: k }} })
+        @bucket.delete_objects(
+          delete: { objects: key_paths.map { |k| { key: k.to_s }} }
+        )
       end
       @log.info "Deleted %p (%.1f ms)" % [keys, duration * 1000]
     end
