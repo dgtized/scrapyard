@@ -5,7 +5,7 @@ require 'scrapyard'
 require 'fileutils'
 
 RSpec.describe Scrapyard::Runner do
-  before(:all) do
+  before do
     FileUtils.rmtree('scrapyard')
     FileUtils.mkdir_p('scrapyard')
   end
