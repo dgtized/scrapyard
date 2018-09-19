@@ -21,4 +21,16 @@ RSpec.describe Scrapyard::Pack do
       expect(log).to have_received(:info).with(/Created/)
     end
   end
+
+  context "restore" do
+    it "restores from packfile" do
+      Tempfile.create('scrapyard') do |temp|
+        system("tar czf #{temp.path} lib/")
+        expect(pack.restore(temp.path, ["lib"])).to eq 0
+      end
+
+      expect(log).to have_received(:info).with(/Executing/)
+      expect(log).to have_received(:info).with(/Restored/)
+    end
+  end
 end
