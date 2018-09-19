@@ -13,12 +13,14 @@ module Scrapyard
     end
 
     def save(cache, paths)
-      Tempfile.open('scrapyard') do |temp|
-        temp_path = temp.path
-        execute("tar czf %s %s" % [temp_path, paths.join(" ")])
-        FileUtils.mv temp_path, cache
-        FileUtils.touch cache
-      end
+      temp = Tempfile.new('scrapyard')
+      execute("tar czf %s %s" % [temp.path, paths.join(" ")])
+
+      # removes temp & saves tarball to cache directory
+      FileUtils.mv temp.path, cache
+
+      # update mtime of cache so it is first on lookup
+      FileUtils.touch cache
 
       contents = %x|ls -lah #{cache}|
       log.info "Created: \n%s" % contents.chomp
