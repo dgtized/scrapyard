@@ -25,7 +25,7 @@ RSpec.describe Scrapyard::Key do
   context "checksum" do
     it "converts #(file) syntax to checksum" do
       expect(log).to receive(:debug).with(/Including sha1/)
-      Tempfile.open("scrapyard") do |temp|
+      Tempfile.create("scrapyard") do |temp|
         temp.puts "foo"
         temp.close
         key = Scrapyard::Key.new("key-#(%s)" % [temp.path], "", log)
