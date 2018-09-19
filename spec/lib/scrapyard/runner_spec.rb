@@ -29,8 +29,9 @@ RSpec.describe Scrapyard::Runner do
   end
 
   context "#crush" do
+    let(:days) { 24 * 60 * 60 }
     it "removes stale tarballs from cache" do
-      FileUtils.touch 'scrapyard/old.tgz', mtime: Time.now - 30*24*60*60
+      FileUtils.touch 'scrapyard/old.tgz', mtime: Time.now - 30 * days
       FileUtils.touch 'scrapyard/current.tgz', mtime: Time.now
       expect { runner.crush([], []) }.
         to change { File.exist?('scrapyard/old.tgz') }.from(true)
