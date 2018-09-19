@@ -8,6 +8,13 @@ RSpec.describe Scrapyard::Yard do
   let(:logger) { double(info: nil, debug: nil)}
   let(:yard) { Scrapyard::AwsS3Yard.new("", logger, client: s3) }
   let(:now) { Time.now }
+
+  before do
+    FileUtils.mkdir_p 'scrapy'
+    allow(yard).to receive(:to_path).and_return('scrapy')
+  end
+  after { FileUtils.rmtree 'scrapy' }
+
   context "search" do
     it "returns nil if bucket is empty" do
       s3.stub_responses(:list_objects, contents: [])
@@ -19,8 +26,8 @@ RSpec.describe Scrapyard::Yard do
         :list_objects, contents: [{key: 'key.tgz', last_modified: now}]
       )
 
-      expect(yard.search(["key"])).to eq(Pathname.new("/tmp/key.tgz"))
-      expect(yard.search(%w[foo key])).to eq(Pathname.new("/tmp/key.tgz"))
+      expect(yard.search(["key"])).to eq(Pathname.new("scrapy/key.tgz"))
+      expect(yard.search(%w[foo key])).to eq(Pathname.new("scrapy/key.tgz"))
     end
 
     it "finds most recent key when bucket contains multiple matches" do
@@ -31,8 +38,8 @@ RSpec.describe Scrapyard::Yard do
         ]
       )
 
-      expect(yard.search(["key"])).to eq(Pathname.new("/tmp/key-new.tgz"))
-      expect(yard.search(["key-old", "key"])).to eq(Pathname.new("/tmp/key-old.tgz"))
+      expect(yard.search(["key"])).to eq(Pathname.new("scrapy/key-new.tgz"))
+      expect(yard.search(["key-old", "key"])).to eq(Pathname.new("scrapy/key-old.tgz"))
     end
 
     it "finds first matching prefix when matching multiple" do
@@ -43,9 +50,9 @@ RSpec.describe Scrapyard::Yard do
         ]
       )
 
-      expect(yard.search(["key"])).to eq(Pathname.new("/tmp/key-1.tgz"))
+      expect(yard.search(["key"])).to eq(Pathname.new("scrapy/key-1.tgz"))
       expect(yard.search(%w[foo bar])).to be_nil
-      expect(yard.search(["key-2", "key"])).to eq(Pathname.new("/tmp/key-2.tgz"))
+      expect(yard.search(["key-2", "key"])).to eq(Pathname.new("scrapy/key-2.tgz"))
     end
   end
 end
