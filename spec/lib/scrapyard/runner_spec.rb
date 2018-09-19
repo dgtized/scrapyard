@@ -13,6 +13,21 @@ RSpec.describe Scrapyard::Runner do
 
   let(:log) { spy('log') }
   let(:runner) { Scrapyard::Runner.new("scrapyard", log, {})}
+
+  context "#search" do
+    it "finds a key and unpacks it" do
+      Tempfile.create('scrap', Dir.pwd) do |temp|
+        temp.write "cached"
+        temp.close
+        system("tar czf scrapyard/key.tgz #{File.basename(temp.path)}")
+        IO.write(temp.path, "current")
+
+        expect { runner.search(["key"], [temp.path]) }.
+          to(change { IO.read(temp.path) }.from("current").to("cached"))
+      end
+    end
+  end
+
   context "#store" do
     it "creates a tarball" do
       expect { runner.store(["key"], ['scrapyard.gemspec']) }.
