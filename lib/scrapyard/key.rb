@@ -7,8 +7,9 @@ module Scrapyard
   # Translates keys into legal names and handles checksum syntax
   class Key
     attr_reader :log
-    def initialize(key, log)
+    def initialize(key, to_path, log)
       @log = log
+      @to_path = to_path
       @key = translate(checksum(key))
     end
 
@@ -16,12 +17,18 @@ module Scrapyard
       @key
     end
 
-    def self.to_path(yard, keys, suffix, log)
-      keys.map { |k| yard.to_path + (Key.new(k, log).to_s + suffix) }
+    def local
+      (@to_path + @key).to_s
     end
 
-    def self.to_keys(keys, suffix, log)
-      keys.map { |k| Key.new(k, log).to_s + suffix }
+    def self.to_path(yard, keys, suffix, log)
+      keys.map do |k|
+        yard.to_path + (Key.new(k, yard.to_path, log).to_s + suffix)
+      end
+    end
+
+    def self.to_keys(keys, to_path, suffix, log)
+      keys.map { |k| Key.new(k, to_path, log).to_s + suffix }
     end
 
     private

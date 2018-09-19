@@ -21,7 +21,7 @@ module Scrapyard
 
     def search(keys, paths)
       log.info "Searching for %p" % [keys]
-      key_paths = Scrapyard::Key.to_keys(keys, "", log)
+      key_paths = Scrapyard::Key.to_keys(keys, @yard.to_path, "", log)
 
       if (cache = @yard.search(key_paths))
         exit(@pack.restore(cache, paths))
