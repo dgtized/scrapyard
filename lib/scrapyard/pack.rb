@@ -17,7 +17,7 @@ module Scrapyard
         temp_path = temp.path
         execute("tar czf %s %s" % [temp_path, paths.join(" ")])
         FileUtils.mv temp_path, cache
-        system("touch #{cache}")
+        FileUtils.touch cache
       end
 
       contents = %x|ls -lah #{cache}|
