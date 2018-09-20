@@ -134,7 +134,7 @@ module Scrapyard
           delete: { objects: key_paths.map { |k| { key: k.to_s }} }
         )
       end
-      @log.info "Deleted %p (%.1f ms)" % [keys, duration * 1000]
+      @log.info("Deleted %p (%.1f ms)" % [key_paths.map(&:to_s), duration * 1000])
     end
 
     def crush
