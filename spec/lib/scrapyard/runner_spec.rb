@@ -12,7 +12,9 @@ RSpec.describe Scrapyard::Runner do
   after(:all) { FileUtils.rmtree('scrapyard') }
 
   let(:log) { spy('log') }
-  let(:runner) { Scrapyard::Runner.new("scrapyard", log, {})}
+  let(:yard) { Scrapyard::Yard.for('scrapyard', log, {}) }
+  let(:pack) { Scrapyard::Pack.new(log) }
+  let(:runner) { Scrapyard::Runner.new(yard, pack, log) }
 
   context "#search" do
     it "finds a key and unpacks it" do

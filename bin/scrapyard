@@ -102,7 +102,9 @@ options = parse_options
 log = Logger.new(STDOUT)
 log.level = options[:verbose] ? Logger::DEBUG : Logger::WARN
 
-runner = Scrapyard::Runner.new(options[:yard], log, options[:aws_config])
+yard = Scrapyard::Yard.for(options[:yard], log, options[:aws_config])
+pack = Scrapyard::Pack.new(log)
+runner = Scrapyard::Runner.new(yard, pack, log)
 
 if options[:initialize_paths] && options[:command] == :search
   runner.initialize_paths((options[:paths]))
