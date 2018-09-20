@@ -11,7 +11,7 @@ def error(parser, msg)
   exit
 end
 
-def parse_options(args = ARGV)
+def parse_options(args)
   options = {
     aws_config: {},
     keys: [],
@@ -97,17 +97,27 @@ def parse_options(args = ARGV)
   options
 end
 
-options = parse_options
+def main(args)
+  options = parse_options(args)
 
-log = Logger.new(STDOUT)
-log.level = options[:verbose] ? Logger::DEBUG : Logger::WARN
+  log = Logger.new(STDERR)
+  log.level = options[:verbose] ? Logger::DEBUG : Logger::WARN
 
-runner = Scrapyard::Runner.new(options[:yard], log, options[:aws_config])
+  yard = Scrapyard::Yard.for(options[:yard], log, options[:aws_config])
+  pack = Scrapyard::Pack.new(log)
+  runner = Scrapyard::Runner.new(yard, pack, log)
 
-if options[:initialize_paths] && options[:command] == :search
-  runner.initialize_paths((options[:paths]))
+  if options[:initialize_paths] && options[:command] == :search
+    runner.initialize_paths((options[:paths]))
+  end
+
+  runner.send(
+    options[:command], options[:keys], options[:paths]
+  )
 end
 
-runner.send(
-  options[:command], options[:keys], options[:paths]
-)
+if (output = main(ARGV))
+  puts output
+else
+  exit 1
+end

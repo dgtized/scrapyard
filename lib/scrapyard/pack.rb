@@ -13,14 +13,17 @@ module Scrapyard
     end
 
     def save(cache, paths)
-      Tempfile.open('scrapyard') do |temp|
-        temp_path = temp.path
-        execute("tar czf %s %s" % [temp_path, paths.join(" ")])
-        FileUtils.mv temp_path, cache
-        system("touch #{cache}")
-      end
+      temp = Tempfile.new('scrapyard')
+      execute("tar czf %s %s" % [temp.path, paths.join(" ")])
 
-      log.info "Created: %s" % %x|ls -lah #{cache}|.chomp
+      # removes temp & saves tarball to cache directory
+      FileUtils.mv temp.path, cache
+
+      # update mtime of cache so it is first on lookup
+      FileUtils.touch cache
+
+      contents = %x|ls -lah #{cache}|
+      log.info "Created: %s" % contents.chomp
 
       cache
     end
@@ -29,9 +32,10 @@ module Scrapyard
       log.debug "Found scrap in #{cache}"
       rval = execute("tar zxf #{cache}")
       unless paths.empty?
-        log.info "Restored: %s" % %x|du -sh #{paths.join(" ")}|.chomp
+        contents = %x|du -sh #{paths.join(" ")}|
+        log.info "Restored: \n%s" % contents.chomp
       end
-      rval == true ? 0 : 255
+      rval
     end
 
     private

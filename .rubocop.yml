@@ -26,6 +26,9 @@ Style/SingleLineBlockParams:
 Style/FormatString:
   Enabled: false
 
+Style/CommandLiteral:
+  EnforcedStyle: percent_x
+
 # 120-column lines are fine.
 Metrics/LineLength:
   Max: 120

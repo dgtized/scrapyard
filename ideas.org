@@ -1,0 +1,28 @@
+* Ideas
+** TODO add =find= command that uses exact key match
+
+   #+BEGIN_SRC sh
+   scrapyard --yard /tmp/cache --paths junk find --key key
+   #+END_SRC
+
+   Alternatively add =--exact= or some other argument to search?
+
+** TODO  add =update= command that handles combo search & store
+
+   #+BEGIN_SRC 
+   scrapyard update --key key --exec "touch bar" --paths bar
+   #+END_SRC
+
+   It would search keys for closest match, fetch the cache, run the exec command
+   to update the cache contents, and if that succeeded update the first cache
+   key with the new contents.
+
+** TODO Allow user to specify log level
+
+   Currently logging is set to DEBUG if =-v= is set, or WARN otherwise
+
+** TODO Improve scanning logging if there are many matching prefixes
+
+   Currently ALL matching files are listed, but it might help clarify to sort
+   matches by last modified descending, and only print the first 3 to 5 with an
+   ellipse if there are more available.
