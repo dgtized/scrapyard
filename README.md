@@ -2,7 +2,7 @@
 
 [![CircleCI](https://circleci.com/gh/dgtized/scrapyard.svg?style=svg)](https://circleci.com/gh/dgtized/scrapyard)
 
-A simple cache for faster CI builds
+A simple command line caching tool for faster CI builds
 
 Search allows prefix matching of multiple cache keys for the most recent,
 closest match. If a key matches multiple entries, the most recently created
