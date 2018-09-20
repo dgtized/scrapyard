@@ -32,12 +32,13 @@ module Scrapyard
     end
 
     def store(keys, paths)
-      log.info "Storing #{keys}"
-      key_path = Scrapyard::Key.to_path(@yard, keys, ".tgz", log)
-
       # store accepts multiple keys but only uses the first, this ensures it's
       # easy to re-use values between search and store.
-      @yard.store(@pack.save(key_path.first.to_s, paths))
+      key = keys.first
+      log.info "Storing #{key}"
+      key_path = Scrapyard::Key.new(key + ".tgz", @yard.to_path, log)
+
+      @yard.store(key_path.to_s, @pack.save(key_path.local, paths))
       0
     end
 

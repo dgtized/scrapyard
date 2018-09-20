@@ -45,7 +45,7 @@ module Scrapyard
       nil
     end
 
-    def store(cache)
+    def store(_key, cache)
       cache # no-op for local
     end
 
@@ -121,8 +121,7 @@ module Scrapyard
       local
     end
 
-    def store(cache)
-      key = Pathname.new(cache).basename.to_s
+    def store(key, cache)
       duration = Benchmark.realtime do
         @bucket.object(key).upload_file(cache)
       end
