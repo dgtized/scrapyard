@@ -21,12 +21,6 @@ module Scrapyard
       @to_path + @key
     end
 
-    def self.to_path(yard, keys, suffix, log)
-      keys.map do |k|
-        yard.to_path + (Key.new(k, yard.to_path, log).to_s + suffix)
-      end
-    end
-
     def self.to_keys(keys, to_path, suffix, log)
       keys.map { |k| Key.new(k + suffix, to_path, log) }
     end
