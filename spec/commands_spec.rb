@@ -14,7 +14,7 @@ RSpec.describe "Commands" do
   after(:all) { FileUtils.rmtree(%w[yard tmp]) }
 
   def scrap(args, rval: 0)
-    IO.popen("ruby -Ilib bin/scrapyard #{args}") do |io|
+    IO.popen("ruby -Ilib bin/scrapyard -y yard #{args}") do |io|
       lines = io.readlines
       io.close
       expect($CHILD_STATUS.exitstatus).to eq rval
@@ -25,7 +25,7 @@ RSpec.describe "Commands" do
   def make_cache(name, contents)
     Dir.mktmpdir(nil, "tmp") do |dir|
       IO.write("#{dir}/foo", contents)
-      scrap("store -k #{name} -y yard -p #{dir}")
+      scrap("store -k #{name} -p #{dir}")
       dir
     end
   end
@@ -43,7 +43,7 @@ RSpec.describe "Commands" do
 
     expect(File.exist?("yard/key.tgz")).to be_truthy
 
-    expect(scrap("search -k key -y yard -p #{dir}")).to eq ["key.tgz"]
+    expect(scrap("search -k key -p #{dir}")).to eq ["key.tgz"]
 
     assert_cache(dir, contents)
   end
@@ -53,14 +53,14 @@ RSpec.describe "Commands" do
     let!(:cacheB) { make_cache("key-B", "b") }
 
     it 'searches by mtime for multiple caches' do
-      expect(scrap("search -k key -y yard -p #{cacheB}")).
+      expect(scrap("search -k key -p #{cacheB}")).
         to eq ["key-B.tgz"]
 
       assert_cache(cacheB, "b")
     end
 
     it 'searches by key preference' do
-      expect(scrap("search -k key-A,key-B -y yard -p #{cacheA}")).
+      expect(scrap("search -k key-A,key-B -p #{cacheA}")).
         to eq ["key-A.tgz"]
 
       assert_cache(cacheA, "a")
@@ -86,7 +86,7 @@ RSpec.describe "Commands" do
     after { File.delete content }
 
     it "incorporates sha in key" do
-      expect(scrap("store -k 'content-#(tmp/bar.file)' -y yard -p tmp")).
+      expect(scrap("store -k 'content-#(tmp/bar.file)' -p tmp")).
         to eq([key])
 
       expect(File.exist?("yard/#{key}")).to be_truthy
