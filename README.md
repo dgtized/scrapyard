@@ -17,22 +17,22 @@ Paths are compressed into a tarball and stored in a local directory or S3.
 Search the `yard` for a `key` to restore `paths`
 
 ```
-scrapyard --yard /tmp/cache --paths junk \
-    search --key "junk-$GIT_BRANCH-#(bar),junk-$GIT_BRANCH,junk-"
+scrapyard --yard /tmp/cache --paths stuff \
+    search --key "stuff-$GIT_BRANCH-#(bar),stuff-$GIT_BRANCH,stuff-"
 ```
 
 Save `paths` to the `yard` using the `key`
 
 ```
-scrapyard --yard /tmp/cache --paths parts.1,parts.2,parts.3 \
-    store --key "junk-$GIT_BRANCH-#(bar)"
+scrapyard --yard /tmp/cache --paths stuff.1,stuff.2,stuff.3 \
+    store --key "stuff-$GIT_BRANCH-#(bar)"
 ```
 
 Remove a specific `key` from the `yard`:
 
 ```
 scrapyard --yard /tmp/cache \
-    junk --key "junk-$GIT_BRANCH-#(bar)"
+    junk --key "stuff-$GIT_BRANCH-#(bar)"
 ```
 
 Expire old `keys` in the `yard`:
