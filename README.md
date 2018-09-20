@@ -44,14 +44,16 @@ scrapyard crush --yard /tmp/cache
 ## S3
 
 ```
-scrapyard --aws-region us-east-1 --yard s3://scrapyard/
+scrapyard --aws-region us-east-1 --yard s3://scrapyard.foo.com/
     store --key "foo" --paths a
 ```
 
 ```
-scrapyard --aws-region us-east-1 --yard s3://scrapyard/
+scrapyard --aws-region us-east-1 --yard s3://scrapyard.foo.com/
     search --key "foo,bar" --paths a
 ```
+
+Example IAM permissions for the hypothetical `scrapyard.foo.com` are included in `iam-scrapyard.json`.
 
 Crush is not available for expiring caches in s3 buckets, it is recommended to
 use a bucket expiration rule to do this automatically.
