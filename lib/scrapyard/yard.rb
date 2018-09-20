@@ -45,11 +45,11 @@ module Scrapyard
       nil
     end
 
+    # no-op for local
     def fetch(key); end
 
-    def store(_key, cache)
-      cache # no-op for local
-    end
+    # no-op for local
+    def store(key, cache); end
 
     def junk(keys)
       keys.map(&:local).select(&:exist?).each(&:delete)
