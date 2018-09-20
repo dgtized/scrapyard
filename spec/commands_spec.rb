@@ -3,6 +3,7 @@
 require 'spec_helper'
 require 'fileutils'
 require 'tmpdir'
+require 'English'
 
 RSpec.describe "Commands" do
   before(:each) do
@@ -12,8 +13,14 @@ RSpec.describe "Commands" do
 
   after(:all) { FileUtils.rmtree(%w[yard tmp]) }
 
-  def scrap(args)
-    expect(system("ruby -Ilib bin/scrapyard #{args}")).to be_truthy
+  def scrap(args, rval: 0)
+    status, lines = IO.popen("ruby -Ilib bin/scrapyard #{args}") do |io|
+      lines = io.readlines
+      io.close
+      [$CHILD_STATUS, lines]
+    end
+    expect(status.exitstatus).to eq rval
+    lines.map(&:chomp)
   end
 
   def make_cache(name, contents)
@@ -37,7 +44,7 @@ RSpec.describe "Commands" do
 
     expect(File.exist?("yard/key.tgz")).to be_truthy
 
-    scrap("search -k key -y yard -p #{dir}")
+    expect(scrap("search -k key -y yard -p #{dir}")).to eq ["key.tgz"]
 
     assert_cache(dir, contents)
   end
@@ -47,13 +54,15 @@ RSpec.describe "Commands" do
     let!(:cacheB) { make_cache("key-B", "b") }
 
     it 'searches by mtime for multiple caches' do
-      scrap("search -k key -y yard -p #{cacheB}")
+      expect(scrap("search -k key -y yard -p #{cacheB}")).
+        to eq ["key-B.tgz"]
 
       assert_cache(cacheB, "b")
     end
 
     it 'searches by key preference' do
-      scrap("search -k key-A,key-B -y yard -p #{cacheA}")
+      expect(scrap("search -k key-A,key-B -y yard -p #{cacheA}")).
+        to eq ["key-A.tgz"]
 
       assert_cache(cacheA, "a")
     end
@@ -65,7 +74,7 @@ RSpec.describe "Commands" do
       dir
     end
 
-    expect(system("ruby -Ilib bin/scrapyard search -i -k missing -p #{path}")).to be_falsey
+    expect(scrap("search -i -k missing -p #{path}", rval: 1)).to be_empty
 
     expect(Dir.exist?(path)).to be_truthy
     expect(File.exist?(path + "/foo")).to be_falsey
@@ -73,14 +82,15 @@ RSpec.describe "Commands" do
 
   context "content sha" do
     let(:content) { "tmp/bar.file" }
+    let(:key) { "content-ae2ad9454f3af7fcb18c83969f99b20a788eddd1.tgz" }
     before { IO.write(content, "quux") }
     after { File.delete content }
 
     it "incorporates sha in key" do
-      scrap("store -k 'content-#(tmp/bar.file)' -y yard -p tmp")
-      expect(
-        File.exist?("yard/content-ae2ad9454f3af7fcb18c83969f99b20a788eddd1.tgz")
-      ).to be_truthy
+      expect(scrap("store -k 'content-#(tmp/bar.file)' -y yard -p tmp")).
+        to eq([key])
+
+      expect(File.exist?("yard/#{key}")).to be_truthy
     end
   end
 end
