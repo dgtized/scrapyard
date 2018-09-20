@@ -2,7 +2,7 @@
 
 # namespace for scrapyard classes
 module Scrapyard
-  VERSION = '0.4.5'
+  VERSION = '0.5.0'
 
   require_relative 'scrapyard/key'
   require_relative 'scrapyard/pack'
