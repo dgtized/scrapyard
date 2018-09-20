@@ -1,18 +1,16 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-
+require 'fileutils'
 require 'tmpdir'
 
 RSpec.describe "Commands" do
-  before(:all) do
-    system("rm -rf yard tmp")
-    Dir.mkdir("tmp") unless File.exist?("tmp")
+  before(:each) do
+    FileUtils.rmtree(%w[yard tmp])
+    FileUtils.mkdir_p("tmp")
   end
 
-  after(:all) do
-    system("rm -rf yard tmp")
-  end
+  after(:all) { FileUtils.rmtree(%w[yard tmp]) }
 
   def scrap(args)
     expect(system("ruby -Ilib bin/scrapyard #{args}")).to be_truthy
