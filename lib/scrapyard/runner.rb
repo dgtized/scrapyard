@@ -24,7 +24,10 @@ module Scrapyard
       key_paths = Scrapyard::Key.to_keys(keys, @yard.to_path, "", log)
 
       if (cache = @yard.search(key_paths))
-        @pack.restore(cache, paths)
+        key = Key.new(cache, @yard.to_path, log)
+        @yard.fetch(key)
+        @pack.restore(key.local, paths)
+        0
       else
         log.info 'Unable to find key(s): %p' % [keys.map(&:to_s)]
         1

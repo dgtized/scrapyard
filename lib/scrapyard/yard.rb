@@ -39,11 +39,13 @@ module Scrapyard
         glob = Pathname.glob(key.local.to_s + "*")
         @log.debug "Scanning %s -> %p" % [key, glob.map(&:to_s)]
         cache = glob.max_by(&:mtime)
-        return cache if cache # return on first match
+        return cache.basename.to_s if cache # return on first match
       end
 
       nil
     end
+
+    def fetch(key); end
 
     def store(_key, cache)
       cache # no-op for local
@@ -106,7 +108,7 @@ module Scrapyard
         glob = files.select { |f| f.key.start_with?(prefix.to_s) }
         @log.debug "Scanning %s -> %p" % [prefix, glob.map(&:key)]
         needle = glob.max_by(&:last_modified)
-        return fetch(Key.new(needle.key, to_path, @log)) if needle
+        return needle.key if needle
       end
 
       nil
@@ -117,7 +119,6 @@ module Scrapyard
         @bucket.object(key.to_s).get(response_target: key.local)
       end
       @log.info "Downloaded key %s (%.1f ms)" % [key, duration * 1000]
-      key.local
     end
 
     def store(key, cache)
