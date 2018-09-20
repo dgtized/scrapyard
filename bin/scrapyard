@@ -97,21 +97,23 @@ def parse_options(args = ARGV)
   options
 end
 
-options = parse_options
+def main
+  options = parse_options
 
-log = Logger.new(STDOUT)
-log.level = options[:verbose] ? Logger::DEBUG : Logger::WARN
+  log = Logger.new(STDOUT)
+  log.level = options[:verbose] ? Logger::DEBUG : Logger::WARN
 
-yard = Scrapyard::Yard.for(options[:yard], log, options[:aws_config])
-pack = Scrapyard::Pack.new(log)
-runner = Scrapyard::Runner.new(yard, pack, log)
+  yard = Scrapyard::Yard.for(options[:yard], log, options[:aws_config])
+  pack = Scrapyard::Pack.new(log)
+  runner = Scrapyard::Runner.new(yard, pack, log)
 
-if options[:initialize_paths] && options[:command] == :search
-  runner.initialize_paths((options[:paths]))
+  if options[:initialize_paths] && options[:command] == :search
+    runner.initialize_paths((options[:paths]))
+  end
+
+  runner.send(
+    options[:command], options[:keys], options[:paths]
+  )
 end
 
-retval = runner.send(
-  options[:command], options[:keys], options[:paths]
-)
-
-exit retval
+exit(main())
