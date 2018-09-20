@@ -64,8 +64,17 @@ to record the exact key that matched. The key will include `.tgz` as a suffix or
 an empty string if no matching key was found.
 
 ```
-KEY=`scrapyard search --key "foo-#(scrapyard.gemspec),foo-"`
-test $KEY = "foo-b56283b49631c067195425e0d5851dd536d8b299.tgz"
+KEY=`scrapyard -v search -k 'key-#(a_file),key,k' -y scrapyard -p a_dir`
+I, [2018-09-20T00:01:21.932126 #24291]  INFO -- : Scrapyard: scrapyard
+I, [2018-09-20T00:01:21.932181 #24291]  INFO -- : Searching for ["key-#(a_file)", "key", "k"]
+D, [2018-09-20T00:01:21.932243 #24291] DEBUG -- : Including sha1 of a_file
+D, [2018-09-20T00:01:21.932854 #24291] DEBUG -- : Scanning key-7fe70820e08a1aac0ef224d9c66ab66831cc4ab1 -> []
+D, [2018-09-20T00:01:21.932921 #24291] DEBUG -- : Scanning key -> ["scrapyard/key.tgz"]
+D, [2018-09-20T00:01:21.932991 #24291] DEBUG -- : Found scrap in scrapyard/key.tgz
+I, [2018-09-20T00:01:21.935875 #24291]  INFO -- : Executing[tar zxf scrapyard/key.tgz] (2.8 ms)
+I, [2018-09-20T00:01:21.936562 #24291]  INFO -- : Restored:
+8.0K    a_dir
+test "$KEY" = "key.tgz"
 ```
 
 ## Options
