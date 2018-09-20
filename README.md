@@ -93,4 +93,6 @@ test "$KEY" = "key.tgz"
 
 Paths can be specified both with `--paths` and as any additional arguments after `--`.
 
-
+`store` accepts a list of keys, but will only create a cache entry for the first
+key. This allows scripts to specify the cache key precedence once, with the
+most specific key first, and re-use this for populating the cache.
