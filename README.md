@@ -55,6 +55,11 @@ scrapyard --aws-region us-east-1 --yard s3://scrapyard/
 
 # Details
 
+## Search Precedence
+
+Each key is used as a prefix in the directory or bucket specified. If the prefix
+matches multiple cache keys, the most recently modified key is selected.
+
 ## Logging
 
 Logging is provided on standard error, and keys found or affected by the command are reported to standard out.
