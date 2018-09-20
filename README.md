@@ -67,6 +67,15 @@ use a bucket expiration rule to do this automatically.
 Each key is used as a prefix in the directory or bucket specified. If the prefix
 matches multiple cache keys, the most recently modified key is selected.
 
+## Legal Keys & Special Syntax
+
+Keys can be any sequence of alphanumeric characters including dash, underscore,
+or period. All other characters will be converted into exclamation marks. When
+pre-processing keys if the special syntax `#(filename)` is found, that will be
+replaced with the `SHA1` checksum of the contents of `filename`, or an empty
+string if the file is not present. Multiple keys can be specified delimited
+by commas. It is recommended to double quote the key(s) argument.
+
 ## Logging
 
 Logging is provided on standard error, and keys found or affected by the command are reported to standard out.
