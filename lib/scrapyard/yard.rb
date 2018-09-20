@@ -52,19 +52,24 @@ module Scrapyard
     def store(key, cache); end
 
     def junk(keys)
-      keys.map(&:local).select(&:exist?).each(&:delete)
+      paths = keys.map(&:local).select(&:exist?)
+      paths.each(&:delete)
+      paths.map(&:basename)
     end
 
     def crush
+      crushed = []
       @log.info 'Crushing the yard to scrap!'
       @path.children.each do |tarball|
         if tarball.mtime < (Time.now - 20 * days)
-          @log.info "Crushing: #{tarball}"
+          @log.debug "Crushing: #{tarball}"
           tarball.delete
+          crushed << tarball.basename
         else
           @log.debug "Keeping: #{tarball} at #{tarball.mtime}"
         end
       end
+      crushed
     end
 
     private
@@ -135,10 +140,12 @@ module Scrapyard
         )
       end
       @log.info("Deleted %p (%.1f ms)" % [keys.map(&:to_s), duration * 1000])
+      keys
     end
 
     def crush
       @log.error "Not Implemented: prefer s3 key expiration rules"
+      []
     end
   end
 end

@@ -27,10 +27,10 @@ module Scrapyard
         key = Key.new(cache, @yard.to_path, log)
         @yard.fetch(key)
         @pack.restore(key.local, paths)
-        true
+        cache
       else
         log.info 'Unable to find key(s): %p' % [keys.map(&:to_s)]
-        false
+        nil
       end
     end
 
@@ -42,20 +42,18 @@ module Scrapyard
       key_path = Scrapyard::Key.new(key + ".tgz", @yard.to_path, log)
 
       @yard.store(key_path.to_s, @pack.save(key_path.local, paths))
-      true
+      key_path.to_s
     end
 
     def junk(keys, _paths)
       log.info "Junking #{keys}"
       key_paths = Scrapyard::Key.to_keys(keys, @yard.to_path, ".tgz", log)
       log.debug "Paths: %p" % key_paths.map(&:to_s)
-      @yard.junk(key_paths)
-      true
+      @yard.junk(key_paths).map(&:to_s)
     end
 
     def crush(_keys, _paths)
       @yard.crush
-      true
     end
   end
 end

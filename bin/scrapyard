@@ -100,7 +100,7 @@ end
 def main(args)
   options = parse_options(args)
 
-  log = Logger.new(STDOUT)
+  log = Logger.new(STDERR)
   log.level = options[:verbose] ? Logger::DEBUG : Logger::WARN
 
   yard = Scrapyard::Yard.for(options[:yard], log, options[:aws_config])
@@ -116,4 +116,8 @@ def main(args)
   )
 end
 
-exit(main(ARGV) ? 0 : 1)
+if (output = main(ARGV))
+  puts output
+else
+  exit 1
+end
