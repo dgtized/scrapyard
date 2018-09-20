@@ -53,6 +53,9 @@ scrapyard --aws-region us-east-1 --yard s3://scrapyard/
     search --key "foo,bar" --paths a
 ```
 
+Crush is not available for expiring caches in s3 buckets, it is recommended to
+use a bucket expiration rule to do this automatically.
+
 # Details
 
 ## Search Precedence
