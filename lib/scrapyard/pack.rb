@@ -23,7 +23,7 @@ module Scrapyard
       FileUtils.touch cache
 
       contents = %x|ls -lah #{cache}|
-      log.info "Created: \n%s" % contents.chomp
+      log.info "Created: %s" % contents.chomp
 
       cache
     end
