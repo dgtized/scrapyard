@@ -34,8 +34,8 @@ module Scrapyard
       @path
     end
 
-    def search(key_paths)
-      key_paths.each do |key|
+    def search(keys)
+      keys.each do |key|
         glob = Pathname.glob(key.local.to_s + "*")
         @log.debug "Scanning %s -> %p" % [key, glob.map(&:to_s)]
         cache = glob.max_by(&:mtime)
@@ -51,8 +51,8 @@ module Scrapyard
       cache # no-op for local
     end
 
-    def junk(key_paths)
-      key_paths.map(&:local).select(&:exist?).each(&:delete)
+    def junk(keys)
+      keys.map(&:local).select(&:exist?).each(&:delete)
     end
 
     def crush
@@ -96,7 +96,7 @@ module Scrapyard
       Pathname.new('/tmp')
     end
 
-    def search(key_paths)
+    def search(keys)
       files = []
       duration = Benchmark.realtime do
         files = @bucket.objects.to_a
@@ -104,7 +104,7 @@ module Scrapyard
       @log.info("Found %d objects in %s (%.1f ms)" %
                 [files.count, @yard_name, duration * 1000])
 
-      key_paths.each do |prefix|
+      keys.each do |prefix|
         glob = files.select { |f| f.key.start_with?(prefix.to_s) }
         @log.debug "Scanning %s -> %p" % [prefix, glob.map(&:key)]
         needle = glob.max_by(&:last_modified)
@@ -128,13 +128,13 @@ module Scrapyard
       @log.info "Uploaded key %s (%.1f ms)" % [key, duration * 1000]
     end
 
-    def junk(key_paths)
+    def junk(keys)
       duration = Benchmark.realtime do
         @bucket.delete_objects(
-          delete: { objects: key_paths.map { |k| { key: k.to_s }} }
+          delete: { objects: keys.map { |k| { key: k.to_s }} }
         )
       end
-      @log.info("Deleted %p (%.1f ms)" % [key_paths.map(&:to_s), duration * 1000])
+      @log.info("Deleted %p (%.1f ms)" % [keys.map(&:to_s), duration * 1000])
     end
 
     def crush
