@@ -53,6 +53,8 @@ scrapyard --aws-region us-east-1 --yard s3://scrapyard.foo.com/
     search --key "foo,bar" --paths a
 ```
 
+In order to use an S3 bucket as a cache yard, the bucket name must be prefixed with `s3://`, otherwise `scrapyard` will infer the yard is a local directory.
+
 Example IAM permissions for the hypothetical `scrapyard.foo.com` are included in `iam-scrapyard.json`.
 
 Crush is not available for expiring caches in s3 buckets, it is recommended to
