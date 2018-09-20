@@ -6,8 +6,8 @@ require "scrapyard/key"
 
 RSpec.describe Scrapyard::Yard do
   let(:s3) { Aws::S3::Client.new(stub_responses: true) }
-  let(:logger) { double(info: nil, debug: nil)}
-  let(:yard) { Scrapyard::AwsS3Yard.new("", logger, client: s3) }
+  let(:log) { spy }
+  let(:yard) { Scrapyard::AwsS3Yard.new("", log, client: s3) }
   let(:now) { Time.now }
 
   context "search" do
@@ -48,6 +48,31 @@ RSpec.describe Scrapyard::Yard do
       expect(yard.search(["key"])).to eq("key-1.tgz")
       expect(yard.search(%w[foo bar])).to be_nil
       expect(yard.search(["key-2", "key"])).to eq("key-2.tgz")
+    end
+  end
+
+  context "fetch" do
+    before do
+      FileUtils.rmtree 'scrapy'
+      FileUtils.mkdir_p 'scrapy'
+    end
+    after { FileUtils.rmtree 'scrapy' }
+
+    let(:local) { 'scrapy/key.tgz' }
+    it "downloads from s3" do
+      key = instance_double(Scrapyard::Key, local: local, to_s: 'key.tgz')
+      s3.stub_responses(
+        :get_object, lambda do |ctx|
+          if ctx.params[:key] == "key.tgz"
+            { body: 'contents' }
+          else
+            'NotFound'
+          end
+        end
+      )
+      expect { yard.fetch(key) }.to change { File.exist?(local) }.to(true)
+      expect(IO.read(local)).to eq 'contents'
+      expect(log).to have_received(:info).with(/Downloaded/)
     end
   end
 end
