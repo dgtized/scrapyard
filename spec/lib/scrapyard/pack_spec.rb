@@ -29,7 +29,7 @@ RSpec.describe Scrapyard::Pack do
     it "restores from packfile" do
       Tempfile.create('scrapyard') do |temp|
         system("tar czf #{temp.path} #{file}")
-        expect(pack.restore(temp.path, [file])).to eq 0
+        expect(pack.restore(temp.path, [file])).to be_truthy
       end
 
       expect(log).to have_received(:info).with(/Executing/)

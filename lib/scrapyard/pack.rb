@@ -35,7 +35,7 @@ module Scrapyard
         contents = %x|du -sh #{paths.join(" ")}|
         log.info "Restored: \n%s" % contents.chomp
       end
-      rval == true ? 0 : 255
+      rval
     end
 
     private
