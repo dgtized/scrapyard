@@ -14,13 +14,12 @@ RSpec.describe "Commands" do
   after(:all) { FileUtils.rmtree(%w[yard tmp]) }
 
   def scrap(args, rval: 0)
-    status, lines = IO.popen("ruby -Ilib bin/scrapyard #{args}") do |io|
+    IO.popen("ruby -Ilib bin/scrapyard #{args}") do |io|
       lines = io.readlines
       io.close
-      [$CHILD_STATUS, lines]
-    end
-    expect(status.exitstatus).to eq rval
-    lines.map(&:chomp)
+      expect($CHILD_STATUS.exitstatus).to eq rval
+      lines
+    end.map(&:chomp)
   end
 
   def make_cache(name, contents)
