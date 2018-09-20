@@ -21,5 +21,5 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency('rspec', '~> 3')
   s.add_development_dependency('rspec_junit_formatter', '~> 0.4')
-  s.add_development_dependency('rubocop', '~> 0')
+  s.add_development_dependency('rubocop', '~> 0.49')
 end
