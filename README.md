@@ -52,3 +52,24 @@ scrapyard --aws-region us-east-1 --yard s3://scrapyard/
 scrapyard --aws-region us-east-1 --yard s3://scrapyard/
     search --key "foo,bar" --paths a
 ```
+
+# Details
+
+## Logging
+
+Logging is provided on standard error, and keys found or affected by the command are reported to standard out.
+
+This is particularly useful when searching a list of keys, allowing the script
+to record the exact key that matched. The key will include `.tgz` as a suffix or
+an empty string if no matching key was found.
+
+```
+KEY=`scrapyard search --key "foo-#(scrapyard.gemspec),foo-"`
+test $KEY = "foo-b56283b49631c067195425e0d5851dd536d8b299.tgz"
+```
+
+## Options
+
+Paths can be specified both with `--paths` and as any additional arguments after `--`.
+
+
