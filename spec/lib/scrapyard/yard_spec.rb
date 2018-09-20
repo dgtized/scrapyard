@@ -2,6 +2,7 @@
 
 require "spec_helper"
 require "scrapyard/yard"
+require "scrapyard/key"
 
 RSpec.describe Scrapyard::Yard do
   let(:s3) { Aws::S3::Client.new(stub_responses: true) }
@@ -11,7 +12,7 @@ RSpec.describe Scrapyard::Yard do
 
   before do
     FileUtils.mkdir_p 'scrapy'
-    allow(yard).to receive(:to_path).and_return('scrapy')
+    allow(yard).to receive(:to_path).and_return(Pathname.new('scrapy'))
   end
   after { FileUtils.rmtree 'scrapy' }
 

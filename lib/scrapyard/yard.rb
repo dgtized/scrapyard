@@ -91,7 +91,7 @@ module Scrapyard
     end
 
     def to_path
-      '/tmp/'
+      Pathname.new('/tmp')
     end
 
     def search(key_paths)
@@ -106,19 +106,18 @@ module Scrapyard
         glob = files.select { |f| f.key.start_with?(prefix.to_s) }
         @log.debug "Scanning %s -> %p" % [prefix, glob.map(&:key)]
         needle = glob.max_by(&:last_modified)
-        return fetch(needle.key) if needle
+        return fetch(Key.new(needle.key, to_path, @log)) if needle
       end
 
       nil
     end
 
-    def fetch(cache)
-      local = Pathname.new(to_path).join(cache)
+    def fetch(key)
       duration = Benchmark.realtime do
-        @bucket.object(cache).get(response_target: local)
+        @bucket.object(key.to_s).get(response_target: key.local)
       end
-      @log.info "Downloaded key %s (%.1f ms)" % [cache, duration * 1000]
-      local
+      @log.info "Downloaded key %s (%.1f ms)" % [key, duration * 1000]
+      key.local
     end
 
     def store(key, cache)
