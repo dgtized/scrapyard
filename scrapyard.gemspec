@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'lib/scrapyard'
+require_relative 'lib/scrapyard/version.rb'
 
 Gem::Specification.new do |s|
   s.name        = 'scrapyard'
