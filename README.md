@@ -12,6 +12,20 @@ Paths are compressed into a tarball and stored in a local directory or S3.
 
 # Install
 
+Scrapyard is not yet published as a gem, so recommend installing it with bundler as a git remote source or building the gem locally.
+
+```ruby
+# Gemfile
+gem 'scrapyard', git: 'https://github.com/dgtized/scrapyard', tag: 'v0.5.1', require: false
+```
+
+```bash
+git clone https://github.com/dgtized/scrapyard
+cd scrapyard
+gem build scrapyard.gemspec
+gem install scrapyard
+```
+
 # Usage
 
 Search the `yard` for a `key` to restore `paths`
