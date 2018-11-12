@@ -16,13 +16,14 @@ RSpec.describe Scrapyard::Key do
   end
 
   context "checksum" do
+    let(:sha) { "f1d2d2f924e986ac86fdf7b36c94bcdf32beec15" }
     it "converts #(file) syntax to checksum" do
       expect(log).to receive(:debug).with(/Including sha1/)
       Tempfile.create("scrapyard") do |temp|
         temp.puts "foo"
         temp.close
         key = Scrapyard::Key.new("key-#(%s)" % [temp.path], "", log)
-        expect(key.to_s).to eq "key-f1d2d2f924e986ac86fdf7b36c94bcdf32beec15"
+        expect(key.to_s).to eq "key-#{sha}"
       end
     end
 
@@ -30,6 +31,20 @@ RSpec.describe Scrapyard::Key do
       expect(log).to receive(:warn).with(/File missing-file does not exist/)
       key = Scrapyard::Key.new("key-#(missing-file)", "", log)
       expect(key.to_s).to eq "key-"
+    end
+
+    it "parses multiple checksums" do
+      expect(log).to receive(:debug).with(/Including sha1/).twice
+      Tempfile.create("scrap1") do |temp1|
+        temp1.puts "foo"
+        temp1.close
+        Tempfile.create("scrap2") do |temp2|
+          temp2.puts "foo"
+          temp2.close
+          key = Scrapyard::Key.new("key-#(%s)-#(%s)" % [temp1.path, temp2.path], "", log)
+          expect(key.to_s).to eq "key-#{sha}-#{sha}"
+        end
+      end
     end
   end
 
