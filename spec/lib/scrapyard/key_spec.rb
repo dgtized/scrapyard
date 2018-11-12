@@ -6,6 +6,9 @@ require 'tempfile'
 
 RSpec.describe Scrapyard::Key do
   let(:log) { double }
+  def keygen(key)
+    Scrapyard::Key.new(key, "", log).to_s
+  end
 
   context ".to_keys" do
     it "adds suffixes to array" do
@@ -22,15 +25,13 @@ RSpec.describe Scrapyard::Key do
       Tempfile.create("scrapyard") do |temp|
         temp.puts "foo"
         temp.close
-        key = Scrapyard::Key.new("key-#(%s)" % [temp.path], "", log)
-        expect(key.to_s).to eq "key-#{sha}"
+        expect(keygen("key-#(%s)" % [temp.path])).to eq "key-#{sha}"
       end
     end
 
     it "recovers from missing checksum file with empty string" do
       expect(log).to receive(:warn).with(/File missing-file does not exist/)
-      key = Scrapyard::Key.new("key-#(missing-file)", "", log)
-      expect(key.to_s).to eq "key-"
+      expect(keygen("key-#(missing-file)")).to eq "key-"
     end
 
     it "parses multiple checksums" do
@@ -41,8 +42,8 @@ RSpec.describe Scrapyard::Key do
         Tempfile.create("scrap2") do |temp2|
           temp2.puts "foo"
           temp2.close
-          key = Scrapyard::Key.new("key-#(%s)-#(%s)" % [temp1.path, temp2.path], "", log)
-          expect(key.to_s).to eq "key-#{sha}-#{sha}"
+          expect(keygen("key-#(%s)-#(%s)" % [temp1.path, temp2.path])).
+            to eq "key-#{sha}-#{sha}"
         end
       end
     end
@@ -70,8 +71,7 @@ RSpec.describe Scrapyard::Key do
         "a/=b" => "a!!b"
       }.each do |example, result|
         expect(log).to receive(:warn).with(/Translated key to/) if example != result
-        expect(Scrapyard::Key.new(example, "", log).to_s).
-          to eq(result)
+        expect(keygen(example)).to eq(result)
       end
     end
   end
