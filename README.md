@@ -16,7 +16,7 @@ Scrapyard is not yet published as a gem, so recommend installing it with bundler
 
 ```ruby
 # Gemfile
-gem 'scrapyard', git: 'https://github.com/dgtized/scrapyard', tag: 'v0.5.1', require: false
+gem 'scrapyard', git: 'https://github.com/dgtized/scrapyard', tag: 'v0.5.2', require: false
 ```
 
 ```bash
